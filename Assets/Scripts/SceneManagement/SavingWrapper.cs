@@ -30,6 +30,15 @@ namespace RPG.SceneManagement
             {
                 Save();
             }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                Delete();
+            }
+        }
+
+        private void Delete()
+        {
+            savingSystem.Delete(defaultSaveFile);
         }
 
         public void Save()
