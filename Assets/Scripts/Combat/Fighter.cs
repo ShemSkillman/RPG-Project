@@ -2,10 +2,12 @@
 using RPG.Movement;
 using RPG.Core;
 using System;
+using RPG.Saving;
+using RPG.Resources;
 
 namespace RPG.Combat
 {
-    public class Fighter : MonoBehaviour, IAction
+    public class Fighter : MonoBehaviour, IAction, ISaveable
     {
         // Configuration parameters
         [SerializeField] Transform rightHandTransform;
@@ -14,23 +16,31 @@ namespace RPG.Combat
 
         private Health target;
         private float timeSinceLastAttack = Mathf.Infinity;
-        private Weapon currentWeapon;
+        private Weapon currentWeapon = null;
 
         private Mover mover;
         private Animator animator;
 
-        private void Start()
+        private void Awake()
         {
             mover = GetComponent<Mover>();
             animator = GetComponent<Animator>();
-            EquipWeapon(defaultWeapon);
+
+            if (currentWeapon == null)
+            {
+                EquipWeapon(defaultWeapon);
+            }
         }
 
         public void EquipWeapon(Weapon weapon)
         {
-            if (currentWeapon != null) currentWeapon.Remove();
             currentWeapon = weapon;
             currentWeapon.Spawn(rightHandTransform, leftHandTransform, animator);
+        }
+
+        public Health GetTarget()
+        {
+            return target;
         }
 
         private void Update()
@@ -74,11 +84,11 @@ namespace RPG.Combat
             if (target == null) return;
             if (currentWeapon.HasProjectile())
             {
-                currentWeapon.LaunchProjectile(target);
+                currentWeapon.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform);
             }
             else
             {
-                target.TakeDamage(currentWeapon.GetWeaponDamage());
+                target.TakeDamage(gameObject, currentWeapon.GetWeaponDamage());
             }     
         }
 
@@ -114,6 +124,18 @@ namespace RPG.Combat
             target = null;
             animator.ResetTrigger("attack");
             animator.SetTrigger("stopAttack");
+        }
+
+        public object CaptureState()
+        {
+            return currentWeapon.name;        
+        }
+
+        public void RestoreState(object state)
+        {
+            string weaponName = (string)state;
+            Weapon weapon = UnityEngine.Resources.Load<Weapon>(weaponName);
+            EquipWeapon(weapon);
         }
     }
 }

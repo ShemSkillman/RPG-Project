@@ -1,80 +1,100 @@
 ﻿using UnityEngine;
-using RPG.Core;
 using UnityEngine.AI;
+using RPG.Resources;
 
-public class Projectile : MonoBehaviour
+namespace RPG.Combat
 {
-    private Health target;
-    [SerializeField] float speed = 10f;
-    [Range(0f, 1f)]
-    [SerializeField] float targetOffsetPadding = 0.75f;
-    [SerializeField] bool isHoming;
-    [SerializeField] bool isSmartAim;
-    Vector3 targetOffset;
-    int damage;
-
-    public void SetTarget(Health target, int damage)
+    public class Projectile : MonoBehaviour
     {
-        this.target = target;
-        this.damage = damage;
-        GenerateRandomTargetOffset();
-        if (!isHoming) AimAtTarget();
-    }
+        private Health target;
+        [SerializeField] float speed = 10f;
+        [Range(0f, 1f)]
+        [SerializeField] float targetOffsetPadding = 0.75f;
+        [SerializeField] bool isHoming;
+        [SerializeField] bool isSmartAim;
+        [SerializeField] GameObject hitEffect;
+        [SerializeField] float maxLifeTime = 10f;
+        [SerializeField] GameObject[] destroyOnHit;
+        [SerializeField] float lifeAfterImpact = 3f;
 
-    private void AimAtTarget()
-    {
-        Vector3 aimPos = GetAim(target.transform.position, target.GetComponent<NavMeshAgent>()) + targetOffset;
-        transform.LookAt(aimPos);
-    }
+        bool isStopped;
+        Vector3 targetOffset;
+        public int damage;
+        GameObject instigator;
 
-    // Marksman skill determines number of aim iterations??
-    private Vector3 GetAim(Vector3 targetPos, NavMeshAgent targetNav)
-    {
-        if (!isSmartAim) return targetPos;
-
-        float distanceToTarget = Vector3.Distance(transform.position, targetPos);
-        float timeToReachTarget = distanceToTarget / speed;
-        Vector3 futureTargetPos = target.transform.position + targetNav.velocity * timeToReachTarget;
-        if (targetPos != futureTargetPos) 
+        public void SetTarget(Health target, GameObject instigator, int damage)
         {
-            return GetAim(futureTargetPos, targetNav);
+            this.target = target;
+            this.damage = damage;
+            this.instigator = instigator;
+
+            if (!isHoming) AimAtTarget();
+            Destroy(gameObject, maxLifeTime);
         }
-        else
+
+        private void AimAtTarget()
         {
-            return targetPos;
+            GenerateRandomTargetOffset();
+            Vector3 aimPos = GetAim(target.transform.position, target.GetComponent<NavMeshAgent>()) + targetOffset;
+            transform.LookAt(aimPos);
         }
-    }
-
-    private void GenerateRandomTargetOffset()
-    {
-        CapsuleCollider targetCollider = target.GetComponent<CapsuleCollider>();
-        float randomX = Random.Range(-targetCollider.radius, targetCollider.radius) * targetOffsetPadding;
-        float randomZ = Random.Range(-targetCollider.radius, targetCollider.radius) * targetOffsetPadding;
-        float randomY = Random.Range(targetCollider.height * (1 - targetOffsetPadding), targetCollider.height * targetOffsetPadding);
-        targetOffset = new Vector3(randomX, randomY, randomZ);
-    }
-
-    private Vector3 GetTargetCenter()
-    {
-        CapsuleCollider targetCollider = target.GetComponent<CapsuleCollider>();
-        return target.transform.position + Vector3.up * targetCollider.height / 2;
-    }
-
-    private void Update()
-    {
-        if (target == null) return;
-        if (isHoming && !target.GetIsDead())
+        
+        private Vector3 GetAim(Vector3 targetPos, NavMeshAgent targetNav)
         {
-            transform.LookAt(GetTargetCenter());
-        }
-        transform.Translate(Vector3.forward * Time.deltaTime * speed);
-    }
+            if (!isSmartAim) return targetPos;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.GetComponent<Health>() != target) return;
-        if (target.GetIsDead()) return;
-        target.TakeDamage(damage);
-        Destroy(gameObject);        
+            float distanceToTarget = Vector3.Distance(transform.position, targetPos);
+            float timeToReachTarget = distanceToTarget / speed;
+            Vector3 futureTargetPos = target.transform.position + targetNav.velocity * timeToReachTarget;
+            if (targetPos != futureTargetPos)
+            {
+                return GetAim(futureTargetPos, targetNav);
+            }
+            else
+            {
+                return targetPos;
+            }
+        }
+
+        private void GenerateRandomTargetOffset()
+        {
+            CapsuleCollider targetCollider = target.GetComponent<CapsuleCollider>();
+            float randomHeight = Random.Range(targetCollider.height * (1 - targetOffsetPadding), targetCollider.height * targetOffsetPadding);
+            targetOffset = new Vector3(0f, randomHeight, 0f);
+        }
+
+        private Vector3 GetTargetCenter()
+        {
+            CapsuleCollider targetCollider = target.GetComponent<CapsuleCollider>();
+            return target.transform.position + Vector3.up * targetCollider.height / 2;
+        }
+
+        private void Update()
+        {
+            if (target == null || isStopped) return;
+            if (isHoming && !target.GetIsDead())
+            {
+                transform.LookAt(GetTargetCenter());
+            }
+            transform.Translate(Vector3.forward * Time.deltaTime * speed);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.GetComponent<Health>() != target) return;
+            if (target.GetIsDead()) return;
+            if (isStopped == true) return;
+            isStopped = true;
+            target.TakeDamage(instigator, damage);
+            if (hitEffect != null) Instantiate(hitEffect, transform.position, transform.rotation);
+
+            foreach (GameObject toDestroy in destroyOnHit)
+            {
+                Destroy(toDestroy);
+            }
+
+            Destroy(gameObject, lifeAfterImpact);
+        }
     }
 }
+

@@ -67,6 +67,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2173439781157999235, guid: a9ca3a10ce574f74aaabb0bcfa31f549,
+        type: 3}
+      propertyPath: weaponPickup
+      value: 
+      objectReference: {fileID: 11400000, guid: 7fd20591bf1dda14991798fa5ef94ab2,
+        type: 2}
     - target: {fileID: 4610552550113235880, guid: a9ca3a10ce574f74aaabb0bcfa31f549,
         type: 3}
       propertyPath: m_Direction
@@ -92,12 +98,6 @@ PrefabInstance:
       propertyPath: m_Center.z
       value: -1.5905716
       objectReference: {fileID: 0}
-    - target: {fileID: 2173439781157999235, guid: a9ca3a10ce574f74aaabb0bcfa31f549,
-        type: 3}
-      propertyPath: weaponPickup
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd20591bf1dda14991798fa5ef94ab2,
-        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9ca3a10ce574f74aaabb0bcfa31f549, type: 3}
 --- !u!4 &3221577671131550858 stripped

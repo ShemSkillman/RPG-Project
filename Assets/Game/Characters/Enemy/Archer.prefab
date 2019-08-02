@@ -67,21 +67,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2772544959275486886, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: characterClass
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: chaseDistance
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: defaultWeapon
       value: 
       objectReference: {fileID: 11400000, guid: 33d8f12ec9ec721428e85918f0f6f962,
         type: 2}
-    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
+    - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
-      propertyPath: chaseDistance
-      value: 10
+      propertyPath: defaultWeaponName
+      value: Enemy Bow
       objectReference: {fileID: 0}
     - target: {fileID: 3725678372733889889, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 78be5954566d2d848918e51832341fa3, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7212728334827857852, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}
+    - {fileID: 3511814788765888186, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}

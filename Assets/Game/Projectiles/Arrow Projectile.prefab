@@ -142,7 +142,7 @@ TrailRenderer:
     shadowBias: 0.5
     generateLightingData: 0
   m_MinVertexDistance: 0.1
-  m_Autodestruct: 0
+  m_Autodestruct: 1
   m_Emitting: 1
 --- !u!1 &1638470020990214575
 GameObject:
@@ -232,6 +232,7 @@ GameObject:
   - component: {fileID: 1671121186790483119}
   - component: {fileID: 964237098246336493}
   - component: {fileID: 8634823168661237179}
+  - component: {fileID: 4806607052699435035}
   m_Layer: 0
   m_Name: Arrow Projectile
   m_TagString: Untagged
@@ -268,9 +269,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 30
-  targetOffsetPadding: 0.75
+  targetOffsetPadding: 0.8
   isHoming: 0
   isSmartAim: 1
+  hitEffect: {fileID: 0}
+  maxLifeTime: 10
+  destroyOnHit:
+  - {fileID: 1638470020990214575}
+  lifeAfterImpact: 3
+  damage: 0
 --- !u!65 &8634823168661237179
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -282,5 +289,21 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.025, y: 0.025, z: 0.5}
-  m_Center: {x: 0, y: 0, z: 0.4}
+  m_Size: {x: 0.025, y: 0.025, z: 0.4327032}
+  m_Center: {x: 0, y: 0, z: 0.36635157}
+--- !u!54 &4806607052699435035
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7045315412033072239}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 3

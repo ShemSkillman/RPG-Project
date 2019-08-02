@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 6482612450989727142}
   - component: {fileID: 534399219011909629}
   - component: {fileID: 3699087119926046656}
+  - component: {fileID: 9223194171723729865}
+  - component: {fileID: 6150202001390715407}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -63,7 +65,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd5afb21c794e9e4e99e364ba022f5f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handTransform: {fileID: 0}
+  rightHandTransform: {fileID: 0}
+  leftHandTransform: {fileID: 0}
   defaultWeapon: {fileID: 11400000, guid: 45c16ff2d1cdb074293a26d9682cc991, type: 2}
 --- !u!195 &7676661998087279248
 NavMeshAgent:
@@ -160,3 +163,31 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &9223194171723729865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5654971481426887976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5e40a5ddbb62a242a529dd5fcc7c904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingLevel: 1
+  characterClass: 1
+  progression: {fileID: 11400000, guid: 7e26f92a999a37b40b14e8a527ec3664, type: 2}
+--- !u!114 &6150202001390715407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5654971481426887976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993ea6d2458fbbc41bc8a2e50eb9ed3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  experiencePoints: 0
