@@ -22,11 +22,11 @@ namespace RPG.Combat
 
             if (targetHealth == null)
             {
-                healthText.text = "N/A";
+                healthText.text = "Enemy: N/A";
             }
             else
             {
-                healthText.text = string.Format("Enemy: {0:0}%", targetHealth.GetPercentage());
+                healthText.text = string.Format("Enemy: {0}/{1}", targetHealth.GetHealthPoints(), targetHealth.GetMaxHealthPoints());
             }            
         }
     }

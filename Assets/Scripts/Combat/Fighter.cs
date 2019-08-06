@@ -4,6 +4,8 @@ using RPG.Core;
 using System;
 using RPG.Saving;
 using RPG.Resources;
+using RPG.Stats;
+using System.Collections.Generic;
 
 namespace RPG.Combat
 {
@@ -20,11 +22,13 @@ namespace RPG.Combat
 
         private Mover mover;
         private Animator animator;
+        private BaseStats baseStats;
 
         private void Awake()
         {
             mover = GetComponent<Mover>();
             animator = GetComponent<Animator>();
+            baseStats = GetComponent<BaseStats>();
 
             if (currentWeapon == null)
             {
@@ -82,14 +86,21 @@ namespace RPG.Combat
         private void Hit()
         {
             if (target == null) return;
+            int damage = baseStats.GetStat(Stat.DamageIncreasePercentage);
             if (currentWeapon.HasProjectile())
             {
-                currentWeapon.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform);
+                currentWeapon.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform, CalculateDamage());
             }
             else
             {
-                target.TakeDamage(gameObject, currentWeapon.GetWeaponDamage());
-            }     
+                target.TakeDamage(gameObject, CalculateDamage());
+            }
+        }
+
+        private int CalculateDamage()
+        {
+            float damageMultiplier = 1f + (baseStats.GetStat(Stat.DamageIncreasePercentage) / 100f);
+            return Mathf.RoundToInt(damageMultiplier * currentWeapon.GetWeaponDamage());
         }
 
         // Animation event
@@ -137,6 +148,7 @@ namespace RPG.Combat
             Weapon weapon = UnityEngine.Resources.Load<Weapon>(weaponName);
             EquipWeapon(weapon);
         }
+
     }
 }
 

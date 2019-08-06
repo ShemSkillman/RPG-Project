@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace RPG.Stats
 {
@@ -8,31 +9,82 @@ namespace RPG.Stats
         [SerializeField] int startingLevel = 1;
         [SerializeField] CharacterClass characterClass;
         [SerializeField] Progression progression;
+        [SerializeField] GameObject levelUpParticleEffect;
 
         int currentLevel = 0;
+        public event Action onLevelUp;
 
         private void Start()
         {
             currentLevel = CalculateLevel();
+
+            Experience experience = GetComponent<Experience>();
+            if (experience != null)
+            {
+                experience.onExperienceGained += UpdateLevel;
+            }
         }
 
-        private void Update()
+        private void UpdateLevel()
         {
             int newLevel = CalculateLevel();
             if (newLevel > currentLevel)
             {
                 currentLevel = newLevel;
-                Debug.Log("Level up!");
+                LevelUpEffect();
+                onLevelUp();
             }
+        }
+
+        private void LevelUpEffect()
+        {
+            Instantiate(levelUpParticleEffect, transform);
         }
 
         public int GetStat(Stat stat)
         {
+            return (GetBaseStat(stat) + GetAdditiveMultiplier(stat)) * (1 + GetPercentageModifier(stat)/100);
+        }
+
+        private int GetBaseStat(Stat stat)
+        {
             return progression.GetStat(characterClass, stat, CalculateLevel());
+        }
+
+        private int GetAdditiveMultiplier(Stat stat)
+        {
+            int total = 0;
+            foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
+            {
+                foreach(int modifier in provider.GetAdditiveModifiers(stat))
+                {
+                    total += modifier;
+                }
+            }
+
+            return total;
+        }
+
+        private int GetPercentageModifier(Stat stat)
+        {
+            int total = 0;
+            foreach(IModifierProvider provider in GetComponents<IModifierProvider>())
+            {
+                foreach(int modifier in provider.GetPercentageModifiers(stat))
+                {
+                    total += modifier;
+                }
+            }
+
+            return total;
         }
 
         public int GetLevel()
         {
+            if (currentLevel < 1)
+            {
+                currentLevel = CalculateLevel();
+            }
             return currentLevel;
         }
 

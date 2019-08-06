@@ -8,18 +8,30 @@ namespace RPG.Resources
     public class Health : MonoBehaviour, ISaveable
     {
         int healthPoints = -1;
+        int maxHealthPoints;
         private bool isDead = false;
 
         Animator animator;
+        BaseStats baseStats;
 
         private void Awake()
         {
             animator = GetComponent<Animator>();
+            baseStats = GetComponent<BaseStats>();
 
+            baseStats.onLevelUp += LevelUpNewHealth;
+            maxHealthPoints = baseStats.GetStat(Stat.Health);
             if (healthPoints < 0)
             {
-                healthPoints = GetComponent<BaseStats>().GetStat(Stat.Health);
+                healthPoints = maxHealthPoints;
             }
+        }
+
+        private void LevelUpNewHealth()
+        {
+            float oldHealthPercentage = healthPoints / (float)maxHealthPoints;
+            maxHealthPoints = baseStats.GetStat(Stat.Health);
+            healthPoints = Mathf.RoundToInt(maxHealthPoints * oldHealthPercentage);
         }
 
         public void TakeDamage(GameObject instigator, int damageTaken)
@@ -43,11 +55,6 @@ namespace RPG.Resources
             experience.GainExperience(GetComponent<BaseStats>().GetStat(Stat.ExperienceReward));
         }
 
-        public float GetPercentage()
-        {
-            return 100 * healthPoints / GetComponent<BaseStats>().GetStat(Stat.Health);
-        }
-
         private void Die()
         {
             isDead = true;
@@ -58,6 +65,16 @@ namespace RPG.Resources
         public bool GetIsDead()
         {
             return isDead;
+        }
+
+        public int GetHealthPoints()
+        {
+            return healthPoints;
+        }
+
+        public int GetMaxHealthPoints()
+        {
+            return maxHealthPoints;
         }
 
         public object CaptureState()

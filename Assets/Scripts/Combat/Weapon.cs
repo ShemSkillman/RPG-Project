@@ -80,10 +80,10 @@ namespace RPG.Combat
             return projectile != null;
         }
 
-        public void LaunchProjectile(Health target, GameObject instigator, Transform rightHand, Transform leftHand)
+        public void LaunchProjectile(Health target, GameObject instigator, Transform rightHand, Transform leftHand, int calculatedDamage)
         {
             Projectile projectileInstance = Instantiate(projectile, GetHandTransform(rightHand, leftHand).position, Quaternion.identity);
-            projectileInstance.SetTarget(target, instigator, weaponDamage);
+            projectileInstance.SetTarget(target, instigator, calculatedDamage);
         }
     }
 }
