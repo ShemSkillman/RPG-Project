@@ -5,6 +5,6 @@
         Health,
         ExperienceReward,
         ExperienceToLevelUp,
-        DamageIncreasePercentage
+        Strength
     }
 }

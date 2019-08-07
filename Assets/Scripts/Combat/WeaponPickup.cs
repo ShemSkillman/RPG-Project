@@ -10,7 +10,7 @@ namespace RPG.Combat
         [SerializeField] float respawnTime = 5f;
         Collider pickupCollider;
 
-        private void Start()
+        private void Awake()
         {
             pickupCollider = GetComponent<Collider>();
         }

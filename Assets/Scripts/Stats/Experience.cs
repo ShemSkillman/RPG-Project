@@ -6,29 +6,29 @@ namespace RPG.Stats
 {
     public class Experience : MonoBehaviour, ISaveable
     {
-        [SerializeField] int experiencePoints;
+        [SerializeField] int totalXP;
         
         public event Action onExperienceGained;
 
         public object CaptureState()
         {
-            return experiencePoints;
+            return totalXP;
         }
 
         public void GainExperience(int experience)
         {
-            experiencePoints += experience;
+            totalXP += experience;
             onExperienceGained();
         }
 
         public void RestoreState(object state)
         {
-            experiencePoints = (int)state;
+            totalXP = (int)state;
         }
 
-        public int GetExperience()
+        public int GetTotalXP()
         {
-            return experiencePoints;
+            return totalXP;
         }
     }
 }

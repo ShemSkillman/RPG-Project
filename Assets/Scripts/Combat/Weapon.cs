@@ -11,7 +11,9 @@ namespace RPG.Combat
         [SerializeField] GameObject weaponPrefab;
         [SerializeField] AnimatorOverrideController weaponAnimatorOverride;
         [SerializeField] float weaponRange = 2f;
-        [SerializeField] int weaponDamage = 10;
+        [SerializeField] int bonusDamagePoints = 10;
+        [Range(0, 100)]
+        [SerializeField] int bonusDamagePercentage = 10;
         [SerializeField] float timeBetweenAttacks = 1f;
         [SerializeField] bool isRightHanded = true;
         [SerializeField] Projectile projectile;
@@ -65,9 +67,14 @@ namespace RPG.Combat
             return weaponRange;
         }
 
-        public int GetWeaponDamage()
+        public int GetBonusDamagePoints()
         {
-            return weaponDamage;
+            return bonusDamagePoints;
+        }
+
+        public int GetBonusDamagePercentage()
+        {
+            return bonusDamagePercentage;
         }
 
         public float GetTimeBetweenAttacks()

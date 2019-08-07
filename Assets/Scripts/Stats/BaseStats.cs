@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using GameDevTV.Utils;
 
 namespace RPG.Stats
 {
@@ -11,26 +12,53 @@ namespace RPG.Stats
         [SerializeField] Progression progression;
         [SerializeField] GameObject levelUpParticleEffect;
 
-        int currentLevel = 0;
+        Experience experience;
+        LazyValue<int> currentLevel;
+        int nextLevelXP;
+
         public event Action onLevelUp;
+
+        private void Awake()
+        {
+            experience = GetComponent<Experience>();
+            currentLevel = new LazyValue<int>(GetInitialCurrentLevel);
+        }
 
         private void Start()
         {
-            currentLevel = CalculateLevel();
+            currentLevel.ForceInit();
+        }
 
-            Experience experience = GetComponent<Experience>();
+        private int GetInitialCurrentLevel()
+        {
+            if (experience == null) return startingLevel;
+
+            nextLevelXP = CalculateXPRequiredForLevel(startingLevel + 1);
+            return CalculateLevel(startingLevel);
+        }
+
+        private void OnEnable()
+        {
             if (experience != null)
             {
                 experience.onExperienceGained += UpdateLevel;
             }
         }
 
+        private void OnDisable()
+        {
+            if (experience != null)
+            {
+                experience.onExperienceGained -= UpdateLevel;
+            }
+        }
+
         private void UpdateLevel()
         {
-            int newLevel = CalculateLevel();
-            if (newLevel > currentLevel)
+            int newLevel = CalculateLevel(currentLevel.value);
+            if (newLevel > currentLevel.value)
             {
-                currentLevel = newLevel;
+                currentLevel.value = newLevel;
                 LevelUpEffect();
                 onLevelUp();
             }
@@ -43,12 +71,12 @@ namespace RPG.Stats
 
         public int GetStat(Stat stat)
         {
-            return (GetBaseStat(stat) + GetAdditiveMultiplier(stat)) * (1 + GetPercentageModifier(stat)/100);
+            return Mathf.RoundToInt((GetBaseStat(stat) + GetAdditiveMultiplier(stat)) * (1 + GetPercentageModifier(stat)/100f));
         }
 
         private int GetBaseStat(Stat stat)
         {
-            return progression.GetStat(characterClass, stat, CalculateLevel());
+            return progression.GetStat(characterClass, stat, GetLevel());
         }
 
         private int GetAdditiveMultiplier(Stat stat)
@@ -81,31 +109,33 @@ namespace RPG.Stats
 
         public int GetLevel()
         {
-            if (currentLevel < 1)
-            {
-                currentLevel = CalculateLevel();
-            }
-            return currentLevel;
+            return currentLevel.value;
         }
 
-        public int CalculateLevel()
+        private int CalculateLevel(int level)
         {
-            Experience experience = GetComponent<Experience>();
-            if (experience == null) return startingLevel;
+            int totalXP = experience.GetTotalXP();
+            if (nextLevelXP < 0 || totalXP < nextLevelXP) return level;
 
-            int currentXP = experience.GetExperience();
+            level++;
+            nextLevelXP = CalculateXPRequiredForLevel(level + 1);
+
+            return CalculateLevel(level);
+        }
+
+        public int CalculateXPRequiredForLevel(int level)
+        {
+            if (level < 2) return 0;
 
             int[] XPLevels = progression.GetStatLevels(characterClass, Stat.ExperienceToLevelUp);
-            int level = 1;
-
-            for (int i = 0; i < XPLevels.Length; i++, level++)
+            if (level - 2 < XPLevels.Length)
             {
-                int levelXP = XPLevels[i];
-                if (currentXP < levelXP) break;
+                return XPLevels[level - 2];
             }
 
-            return level;
+            return -1;
         }
+
     }
 }
 

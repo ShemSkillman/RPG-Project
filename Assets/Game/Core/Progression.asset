@@ -16,34 +16,34 @@ MonoBehaviour:
   - characterClass: 0
     stats:
     - stat: 0
-      levels: 640000007800000096000000
+      levels: f401000058020000ee020000
     - stat: 2
-      levels: 19000000320000004b000000
+      levels: 1e0000005000000096000000
     - stat: 1
       levels: 190000003200000064000000
     - stat: 3
-      levels: 000000001400000028000000
+      levels: 0a0000001400000028000000
   - characterClass: 1
     stats:
     - stat: 0
-      levels: 280000003c0000005a000000
+      levels: 6400000096000000e1000000
     - stat: 1
       levels: 0a0000001400000028000000
     - stat: 3
-      levels: 000000001400000028000000
+      levels: 010000000200000004000000
   - characterClass: 2
     stats:
     - stat: 0
-      levels: 320000005000000078000000
+      levels: 7d000000c80000002c010000
     - stat: 1
       levels: 1e0000003c00000078000000
     - stat: 3
-      levels: 000000001400000028000000
+      levels: 0a0000001400000028000000
   - characterClass: 3
     stats:
     - stat: 0
-      levels: 500000006e00000096000000
+      levels: c80000001301000077010000
     - stat: 1
       levels: 190000003200000064000000
     - stat: 3
-      levels: 000000001400000028000000
+      levels: 0a0000001400000028000000

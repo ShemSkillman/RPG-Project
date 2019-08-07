@@ -17,7 +17,8 @@ MonoBehaviour:
   weaponAnimatorOverride: {fileID: 22100000, guid: 89f688be149ca374792cb571f89fb2db,
     type: 2}
   weaponRange: 20
-  weaponDamage: 30
+  bonusDamagePoints: 1000
+  bonusDamagePercentage: 0
   timeBetweenAttacks: 3
   isRightHanded: 0
   projectile: {fileID: 964237098246336493, guid: 435800876343ce247a3d3a899e80f472,

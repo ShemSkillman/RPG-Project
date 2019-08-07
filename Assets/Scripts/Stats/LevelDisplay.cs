@@ -14,9 +14,24 @@ namespace RPG.Stats
             levelText = GetComponent<Text>();
         }
 
-        private void Update()
+        private void Start()
         {
-            levelText.text = string.Format("Level: {0}", baseStats.CalculateLevel());
+            UpdateDisplay();
+        }
+
+        private void OnEnable()
+        {
+            baseStats.onLevelUp += UpdateDisplay;
+        }
+
+        private void OnDisable()
+        {
+            baseStats.onLevelUp -= UpdateDisplay;
+        }
+
+        private void UpdateDisplay()
+        {
+            levelText.text = string.Format("Level: {0}", baseStats.GetLevel());
         }
     }
 }
