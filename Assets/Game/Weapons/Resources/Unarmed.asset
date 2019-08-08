@@ -16,7 +16,7 @@ MonoBehaviour:
   weaponAnimatorOverride: {fileID: 0}
   weaponRange: 2
   bonusDamagePoints: 0
-  bonusDamagePercentage: 1
+  bonusDamagePercentage: 0
   timeBetweenAttacks: 1
   isRightHanded: 1
   projectile: {fileID: 0}

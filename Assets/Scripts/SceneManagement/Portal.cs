@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using RPG.Control;
 
 namespace RPG.SceneManagement
 {
@@ -85,6 +86,5 @@ namespace RPG.SceneManagement
             player.transform.rotation = otherPortal.spawnPoint.rotation;
             playerNavMeshAgent.enabled = true;
         }
-
     }
 }
