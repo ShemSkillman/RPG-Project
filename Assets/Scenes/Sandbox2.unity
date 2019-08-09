@@ -753,7 +753,7 @@ PrefabInstance:
     - target: {fileID: 7087968914391586715, guid: c356c1539ae85de45a586ed59e190da0,
         type: 3}
       propertyPath: startingLevel
-      value: 1
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 5229594010499382755, guid: c356c1539ae85de45a586ed59e190da0,
         type: 3}
@@ -1861,7 +1861,7 @@ PrefabInstance:
     - target: {fileID: 3764364062304851919, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
       propertyPath: m_Name
-      value: Portal B
+      value: 'Portal '
       objectReference: {fileID: 0}
     - target: {fileID: 5506544333645639161, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
@@ -1947,6 +1947,11 @@ PrefabInstance:
         type: 3}
       propertyPath: destination
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594941648156495437, guid: 529bbd0f515e45e459abf90e719384f9,
+        type: 3}
+      propertyPath: sceneToLoadIndex
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6625004459538648178, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
@@ -2187,7 +2192,7 @@ PrefabInstance:
     - target: {fileID: 3221577671131550858, guid: ed8b85194596281498bfea31875927e9,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -27.05
+      value: -14.59
       objectReference: {fileID: 0}
     - target: {fileID: 3221577671131550858, guid: ed8b85194596281498bfea31875927e9,
         type: 3}
@@ -2197,7 +2202,7 @@ PrefabInstance:
     - target: {fileID: 3221577671131550858, guid: ed8b85194596281498bfea31875927e9,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 29.6
+      value: 13.53
       objectReference: {fileID: 0}
     - target: {fileID: 3221577671131550858, guid: ed8b85194596281498bfea31875927e9,
         type: 3}
@@ -3558,7 +3563,7 @@ PrefabInstance:
     - target: {fileID: 3764364062304851919, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
       propertyPath: m_Name
-      value: Portal A
+      value: 'Portal '
       objectReference: {fileID: 0}
     - target: {fileID: 5506544333645639161, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}

@@ -284,7 +284,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.5
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -4812,6 +4812,7 @@ MonoBehaviour:
   destroyOnHit:
   - {fileID: 5360635349044446917}
   lifeAfterImpact: 1
+  damage: 0
 --- !u!65 &6218248310839617484
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4902,7 +4903,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 19801364, guid: 5cd5599e01f32bd418f20a3b9eac1c57, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 19801364, guid: 5cd5599e01f32bd418f20a3b9eac1c57, type: 3}
       propertyPath: ShapeModule.radius.value

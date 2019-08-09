@@ -519,6 +519,21 @@ PrefabInstance:
       propertyPath: uniqueIdentifier
       value: 1a417986-74f9-433d-b910-2554fbe6b14c
       objectReference: {fileID: 0}
+    - target: {fileID: 4103999701018057772, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: healthPoints
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678785186156910591, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: m_Speed
+      value: 4.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: chaseDistance
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: weaponDamage
@@ -528,21 +543,6 @@ PrefabInstance:
         type: 3}
       propertyPath: timeBetweenAttacks
       value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3678785186156910591, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: m_Speed
-      value: 4.66
-      objectReference: {fileID: 0}
-    - target: {fileID: 4103999701018057772, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: healthPoints
-      value: 80
-      objectReference: {fileID: 0}
-    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: chaseDistance
-      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3725678372733889889, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
@@ -637,7 +637,7 @@ PrefabInstance:
     - target: {fileID: 3764364062304851919, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
       propertyPath: m_Name
-      value: Portal B
+      value: 'Portal '
       objectReference: {fileID: 0}
     - target: {fileID: 5506544333645639161, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
@@ -722,7 +722,7 @@ PrefabInstance:
     - target: {fileID: 4594941648156495437, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
       propertyPath: destination
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4594941648156495437, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
@@ -2077,7 +2077,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 712663558}
-  m_LocalRotation: {x: 0.11945398, y: 0.8348364, z: -0.19992602, w: 0.49880716}
+  m_LocalRotation: {x: 0.119454, y: 0.8348364, z: -0.19992603, w: 0.4988072}
   m_LocalPosition: {x: 2.88, y: 3.56, z: -2.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2898,7 +2898,7 @@ PrefabInstance:
     - target: {fileID: 3764364062304851919, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
       propertyPath: m_Name
-      value: Portal A
+      value: 'Portal '
       objectReference: {fileID: 0}
     - target: {fileID: 5506544333645639161, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
@@ -2968,7 +2968,7 @@ PrefabInstance:
     - target: {fileID: 4594941648156495437, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
       propertyPath: sceneToLoadIndex
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4594941648156495437, guid: 529bbd0f515e45e459abf90e719384f9,
         type: 3}
@@ -5358,17 +5358,17 @@ PrefabInstance:
       propertyPath: uniqueIdentifier
       value: 5015bca6-efb0-4cbf-80ff-1f754dd9306f
       objectReference: {fileID: 0}
+    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: patrolPath
+      value: 
+      objectReference: {fileID: 1421351512}
     - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: defaultWeapon
       value: 
       objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
         type: 2}
-    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: patrolPath
-      value: 
-      objectReference: {fileID: 1421351512}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}
 --- !u!1001 &1877375300
@@ -5882,7 +5882,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116846047}
-  m_LocalRotation: {x: 0.00891965, y: 0.985965, z: 0.056006797, w: -0.15702489}
+  m_LocalRotation: {x: 0.008919646, y: 0.98596495, z: 0.056006774, w: -0.15702488}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -6171,6 +6171,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Core
       objectReference: {fileID: 0}
+    - target: {fileID: 329670205482545883, guid: c356c1539ae85de45a586ed59e190da0,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -34.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 329670205482545883, guid: c356c1539ae85de45a586ed59e190da0,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 31.37
+      objectReference: {fileID: 0}
     - target: {fileID: 7539043534564556924, guid: c356c1539ae85de45a586ed59e190da0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6256,15 +6266,15 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 48.30551
       objectReference: {fileID: 0}
-    - target: {fileID: 329670205482545883, guid: c356c1539ae85de45a586ed59e190da0,
+    - target: {fileID: 5229594010499382755, guid: c356c1539ae85de45a586ed59e190da0,
         type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -34.16
+      propertyPath: m_AnchoredPosition.x
+      value: 10.469971
       objectReference: {fileID: 0}
-    - target: {fileID: 329670205482545883, guid: c356c1539ae85de45a586ed59e190da0,
+    - target: {fileID: 7087968914391586715, guid: c356c1539ae85de45a586ed59e190da0,
         type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 31.37
+      propertyPath: startingLevel
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c356c1539ae85de45a586ed59e190da0, type: 3}

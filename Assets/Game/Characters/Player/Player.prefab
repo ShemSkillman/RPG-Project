@@ -137,6 +137,11 @@ PrefabInstance:
       propertyPath: characterClass
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9223194171723729865, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
+        type: 3}
+      propertyPath: startingLevel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7676661998087279248, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: m_Enabled
