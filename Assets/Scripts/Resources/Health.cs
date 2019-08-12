@@ -3,6 +3,7 @@ using RPG.Saving;
 using RPG.Stats;
 using RPG.Core;
 using GameDevTV.Utils;
+using UnityEngine.Events;
 
 namespace RPG.Resources
 {
@@ -11,6 +12,7 @@ namespace RPG.Resources
         LazyValue<int> healthPoints;
         LazyValue<int> maxHealthPoints;
         private bool isDead = false;
+        [SerializeField] UnityEvent onTakeDamage;
 
         Animator animator;
         BaseStats baseStats;
@@ -57,9 +59,10 @@ namespace RPG.Resources
 
         public void TakeDamage(GameObject instigator, int damageTaken)
         {
-            if (isDead) return;         
+            if (isDead) return;
 
             healthPoints.value = Mathf.Max(healthPoints.value - damageTaken, 0);
+            onTakeDamage.Invoke();
 
             if (healthPoints.value < 1)
             {

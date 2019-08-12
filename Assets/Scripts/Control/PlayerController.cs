@@ -99,7 +99,7 @@ namespace RPG.Control
             bool hasHit = RaycastNavMesh(out Vector3 target);
             if (hasHit)
             {
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButtonDown(0))
                 {
                     mover.StartMoveAction(target, 1f);
                 }

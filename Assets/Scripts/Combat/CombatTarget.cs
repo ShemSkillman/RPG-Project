@@ -20,7 +20,7 @@ namespace RPG.Combat
             Fighter playerFighter = callingController.GetComponent<Fighter>();
             if (!playerFighter.CanAttack(gameObject)) return false;
 
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 playerFighter.Attack(gameObject);
             }
