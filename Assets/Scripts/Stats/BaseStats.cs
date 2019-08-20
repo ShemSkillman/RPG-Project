@@ -74,6 +74,11 @@ namespace RPG.Stats
             return Mathf.RoundToInt((GetBaseStat(stat) + GetAdditiveMultiplier(stat)) * (1 + GetPercentageModifier(stat)/100f));
         }
 
+        public int GetRewardXP()
+        {
+            return progression.GetRewardXP(currentLevel.value);
+        }
+
         private int GetBaseStat(Stat stat)
         {
             return progression.GetStat(characterClass, stat, GetLevel());
@@ -127,7 +132,7 @@ namespace RPG.Stats
         {
             if (level < 2) return 0;
 
-            int[] XPLevels = progression.GetStatLevels(characterClass, Stat.ExperienceToLevelUp);
+            int[] XPLevels = progression.GetXPLevels();
             if (level - 2 < XPLevels.Length)
             {
                 return XPLevels[level - 2];

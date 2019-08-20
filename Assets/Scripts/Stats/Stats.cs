@@ -3,8 +3,9 @@
     public enum Stat
     {
         Health,
-        ExperienceReward,
-        ExperienceToLevelUp,
-        Strength
+        Strength,
+        Range,
+        Defense,
+        Swiftness
     }
 }

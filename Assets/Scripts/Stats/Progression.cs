@@ -7,63 +7,84 @@ namespace RPG.Stats
     [CreateAssetMenu(fileName = "Progression", menuName = "Stats/New Progression")]
     public class Progression : ScriptableObject
     {
-        [SerializeField] ProgressionCharacterClass[] characterClasses;
+        [SerializeField] Character[] characters;
 
-        Dictionary<CharacterClass, Dictionary<Stat, int[]>> lookupTable;
+        [SerializeField] float healthMultiplier = 1f;
+        [SerializeField] public int[] statTable;
+        [SerializeField] int[] xpRewardTable;
+        [SerializeField] int[] levelXPTable;
+
+        Dictionary<CharacterClass, Dictionary<Stat, float>> charStatMultiplierLookup;
 
         public int GetStat(CharacterClass characterClass, Stat stat, int level)
         {
             BuildLookUp();
 
-            int[] levels =  lookupTable[characterClass][stat];
+            int stockStat = GetStockStat(stat, level);
+            float multiplier = 1f;
 
-            if (level > levels.Length)
+            if (charStatMultiplierLookup[characterClass].ContainsKey(stat))
             {
-                Debug.Log(stat + " value could not be found for " + characterClass + " of level " + level);
-                return levels[levels.Length - 1];
+                multiplier = charStatMultiplierLookup[characterClass][stat];
             }
 
-            return levels[level - 1];
+            return Mathf.RoundToInt(stockStat * multiplier);
         }
 
-        public int[] GetStatLevels(CharacterClass characterClass, Stat stat)
+        public int GetRewardXP(int level)
         {
-            BuildLookUp();
-
-            return lookupTable[characterClass][stat];
+            return xpRewardTable[level - 1];
         }
+
+        public int[] GetXPLevels()
+        {
+            return levelXPTable;
+        }
+
+        private int GetStockStat(Stat stat, int level)
+        {
+            int stockStat;
+            if (level - 1 > statTable.Length) stockStat = statTable[statTable.Length - 1];
+            else stockStat = statTable[level - 1];
+
+            if (stat == Stat.Health)
+            {
+                stockStat = Mathf.RoundToInt(healthMultiplier * stockStat);
+            }
+
+            return stockStat;
+        }        
 
         private void BuildLookUp()
         {
-            if (lookupTable != null) return;
+            if (charStatMultiplierLookup != null) return;
 
-            lookupTable = new Dictionary<CharacterClass, Dictionary<Stat, int[]>>();
+            charStatMultiplierLookup = new Dictionary<CharacterClass, Dictionary<Stat, float>>();
 
-            foreach (ProgressionCharacterClass progressionClass in characterClasses)
+            foreach (Character character in characters)
             {
-                var statLookupTable = new Dictionary<Stat, int[]>();
-
-                foreach (ProgressionStat progressionStat in progressionClass.stats)
+                var statMultiplierDict = new Dictionary<Stat, float>();
+                foreach (StatModifier statMod in character.statModifiers)
                 {
-                    statLookupTable[progressionStat.stat] = progressionStat.levels;
+                    statMultiplierDict[statMod.stat] = statMod.statMultiplier;
                 }
 
-                lookupTable[progressionClass.characterClass] = statLookupTable;
+                charStatMultiplierLookup[character.characterClass] = statMultiplierDict;
             }
         }
 
         [System.Serializable]
-        class ProgressionCharacterClass
+        class Character
         {
             public CharacterClass characterClass;
-            public ProgressionStat[] stats;
+            public StatModifier[] statModifiers;
         }
 
         [System.Serializable]
-        class ProgressionStat
+        class StatModifier
         {
             public Stat stat;
-            public int[] levels;
+            public float statMultiplier;
         }
     }
 }
