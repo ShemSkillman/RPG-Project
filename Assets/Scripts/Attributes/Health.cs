@@ -5,17 +5,22 @@ using RPG.Core;
 using GameDevTV.Utils;
 using UnityEngine.Events;
 
-namespace RPG.Resources
+namespace RPG.Attributes
 {
     public class Health : MonoBehaviour, ISaveable
     {
         LazyValue<int> healthPoints;
         LazyValue<int> maxHealthPoints;
         private bool isDead = false;
-        [SerializeField] UnityEvent onTakeDamage;
+        [SerializeField] TakeDamageEvent onTakeDamage;
 
         Animator animator;
         BaseStats baseStats;
+
+        [System.Serializable]
+        public class TakeDamageEvent : UnityEvent<int>
+        {
+        }
 
         private void Awake()
         {
@@ -62,7 +67,7 @@ namespace RPG.Resources
             if (isDead) return;
 
             healthPoints.value = Mathf.Max(healthPoints.value - damageTaken, 0);
-            onTakeDamage.Invoke();
+            onTakeDamage.Invoke(damageTaken);
 
             if (healthPoints.value < 1)
             {

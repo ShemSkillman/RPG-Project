@@ -2,7 +2,7 @@
 using UnityEngine.AI;
 using RPG.Core;
 using RPG.Saving;
-using RPG.Resources;
+using RPG.Attributes;
 
 namespace RPG.Movement
 {
@@ -37,8 +37,8 @@ namespace RPG.Movement
 
         public void StartMoveAction(Vector3 destination, float speedFraction)
         {
-            MoveTo(destination, speedFraction);
             GetComponent<ActionScheduler>().StartAction(this);
+            MoveTo(destination, speedFraction);
         }
 
         public void MoveTo(Vector3 destination, float speedFraction)

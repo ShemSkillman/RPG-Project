@@ -163,7 +163,7 @@ PrefabInstance:
     - target: {fileID: 7021399010919061827, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: onTakeDamage.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 534399219011909629, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
