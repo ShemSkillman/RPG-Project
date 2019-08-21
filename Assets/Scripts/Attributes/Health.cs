@@ -3,7 +3,6 @@ using RPG.Saving;
 using RPG.Stats;
 using RPG.Core;
 using GameDevTV.Utils;
-using UnityEngine.Events;
 
 namespace RPG.Attributes
 {
@@ -12,15 +11,12 @@ namespace RPG.Attributes
         LazyValue<int> healthPoints;
         LazyValue<int> maxHealthPoints;
         private bool isDead = false;
-        [SerializeField] TakeDamageEvent onTakeDamage;
+
+        public delegate void OnTakeDamage(AttackReport attackReport);
+        public event OnTakeDamage onTakeDamage;
 
         Animator animator;
         BaseStats baseStats;
-
-        [System.Serializable]
-        public class TakeDamageEvent : UnityEvent<int>
-        {
-        }
 
         private void Awake()
         {
@@ -62,18 +58,43 @@ namespace RPG.Attributes
             healthPoints.value = Mathf.RoundToInt(maxHealthPoints.value * oldHealthPercentage);
         }
 
-        public void TakeDamage(GameObject instigator, int damageTaken)
+        public bool TakeDamage(GameObject instigator, int damageTaken, int hitPrecision)
         {
-            if (isDead) return;
+            if (isDead) return false;
+            if (!HasHit(instigator, hitPrecision))
+            {
+                onTakeDamage(new AttackReport(0, AttackResult.Miss));
+                return false;
+            }
+
+            damageTaken = CalculateDamage(damageTaken);
 
             healthPoints.value = Mathf.Max(healthPoints.value - damageTaken, 0);
-            onTakeDamage.Invoke(damageTaken);
+            onTakeDamage(new AttackReport(damageTaken, AttackResult.Hit));
 
             if (healthPoints.value < 1)
             {
                 GrantExperience(instigator);
                 Die();
             }
+
+            return true;
+        }
+
+        private bool HasHit(GameObject instigator, int hitPrecision)
+        {
+            int swiftness = baseStats.GetStat(Stat.Swiftness);
+            float hitChance = hitPrecision / (float)(hitPrecision + swiftness);
+
+            if (Random.value < hitChance) return true;
+            else return false;
+        }
+
+        private int CalculateDamage(int damageTaken)
+        {
+            int defense = baseStats.GetStat(Stat.Defense);
+            damageTaken = Mathf.RoundToInt(Mathf.Pow(damageTaken, 2) / (damageTaken + defense));
+            return damageTaken;
         }
 
         private void GrantExperience(GameObject instigator)
@@ -120,5 +141,29 @@ namespace RPG.Attributes
                 Die();
             }
         }
+    }
+
+    public class AttackReport
+    {
+        public int damageDealt = 0;
+        public AttackResult result;
+
+        public AttackReport()
+        {
+            result = AttackResult.None;
+        }
+
+        public AttackReport(int damageDealt, AttackResult result)
+        {
+            this.damageDealt = damageDealt;
+            this.result = result;
+        }
+    }
+
+    public enum AttackResult
+    {
+        None,
+        Hit,
+        Miss
     }
 }

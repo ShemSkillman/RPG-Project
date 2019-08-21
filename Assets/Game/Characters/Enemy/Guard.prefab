@@ -189,8 +189,19 @@ PrefabInstance:
       propertyPath: healthBarForeground
       value: 
       objectReference: {fileID: 6796000469470195641}
+    - target: {fileID: 4923791724726753978, guid: 8d6638cd305c52d45816a6bd3e9545d4,
+        type: 3}
+      propertyPath: rootCanvas
+      value: 
+      objectReference: {fileID: 3734289186266970974}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d6638cd305c52d45816a6bd3e9545d4, type: 3}
+--- !u!223 &3734289186266970974 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 8774794666393701649, guid: 8d6638cd305c52d45816a6bd3e9545d4,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338042610309527119}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6796000469470195641 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1460493472938940918, guid: 8d6638cd305c52d45816a6bd3e9545d4,

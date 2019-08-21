@@ -14,10 +14,12 @@ namespace RPG.Combat
         [SerializeField] int bonusDamagePoints = 10;
         [Range(0, 100)]
         [SerializeField] int bonusDamagePercentage = 10;
-        [SerializeField] float timeBetweenAttacks = 1f;
+        [SerializeField] float weaponWeight = 1f;
         [SerializeField] bool isRightHanded = true;
         [SerializeField] Projectile projectile;
+
         const string weaponName = "Weapon";
+        const float minTimeBetweenAttacks = 1f;
 
         public void Spawn(Transform rightHand, Transform leftHand, Animator animator)
         {
@@ -67,6 +69,11 @@ namespace RPG.Combat
             return weaponRange;
         }
 
+        public float GetWeaponWeight()
+        {
+            return weaponWeight;
+        }
+
         public int GetBonusDamagePoints()
         {
             return bonusDamagePoints;
@@ -79,7 +86,7 @@ namespace RPG.Combat
 
         public float GetTimeBetweenAttacks()
         {
-            return timeBetweenAttacks;
+            return minTimeBetweenAttacks * weaponWeight;
         }
 
         public bool HasProjectile()
@@ -87,10 +94,10 @@ namespace RPG.Combat
             return projectile != null;
         }
 
-        public void LaunchProjectile(Health target, GameObject instigator, Transform rightHand, Transform leftHand, int calculatedDamage)
+        public void LaunchProjectile(Health target, GameObject instigator, Transform rightHand, Transform leftHand, int calculatedDamage, int hitPrecision)
         {
             Projectile projectileInstance = Instantiate(projectile, GetHandTransform(rightHand, leftHand).position, Quaternion.identity);
-            projectileInstance.SetTarget(target, instigator, calculatedDamage);
+            projectileInstance.SetTarget(target, instigator, calculatedDamage, hitPrecision);
         }
     }
 }

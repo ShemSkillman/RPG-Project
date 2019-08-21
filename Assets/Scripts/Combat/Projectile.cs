@@ -21,12 +21,14 @@ namespace RPG.Combat
         Vector3 targetOffset;
         public int damage;
         GameObject instigator;
+        int hitPrecision;
 
-        public void SetTarget(Health target, GameObject instigator, int damage)
+        public void SetTarget(Health target, GameObject instigator, int damage, int hitPrecision)
         {
             this.target = target;
             this.damage = damage;
             this.instigator = instigator;
+            this.hitPrecision = hitPrecision;
 
             if (!isHoming) AimAtTarget();
             Destroy(gameObject, maxLifeTime);
@@ -84,8 +86,11 @@ namespace RPG.Combat
             if (other.gameObject.GetComponent<Health>() != target) return;
             if (target.GetIsDead()) return;
             if (isStopped == true) return;
+
+            bool hasHit = target.TakeDamage(instigator, damage, hitPrecision);
+            if (!hasHit) return;
+
             isStopped = true;
-            target.TakeDamage(instigator, damage);
             if (hitEffect != null) Instantiate(hitEffect, transform.position, transform.rotation);
 
             foreach (GameObject toDestroy in destroyOnHit)

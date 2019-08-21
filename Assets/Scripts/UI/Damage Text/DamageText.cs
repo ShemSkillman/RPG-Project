@@ -10,9 +10,9 @@ namespace RPG.UI.DamageText
             Destroy(gameObject);
         }
 
-        public void SetValue(int damageAmount)
+        public void SetText(string message)
         {
-            GetComponentInChildren<TextMeshProUGUI>().text = damageAmount.ToString();
+            GetComponentInChildren<TextMeshProUGUI>().text = message;
         }
     }
 }

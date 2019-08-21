@@ -8,13 +8,6 @@ namespace RPG.Combat
     [RequireComponent(typeof(Health))]
     public class CombatTarget : MonoBehaviour, IRaycastable
     {
-        Fighter fighter;
-
-        private void Awake()
-        {
-            fighter = GetComponent<Fighter>();
-        }
-
         public bool HandleRaycast(PlayerController callingController)
         {
             Fighter playerFighter = callingController.GetComponent<Fighter>();

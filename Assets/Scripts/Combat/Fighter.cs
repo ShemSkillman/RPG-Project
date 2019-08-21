@@ -98,15 +98,24 @@ namespace RPG.Combat
         private void Hit()
         {
             if (target == null) return;
-            int damage = baseStats.GetStat(Stat.Strength);
             if (currentWeapon.value.HasProjectile())
             {
-                currentWeapon.value.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform, damage);
+                currentWeapon.value.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform, GetDamage(Stat.Range), GetHitPrecision(Stat.Range));
             }
             else
             {
-                target.TakeDamage(gameObject, damage);
+                target.TakeDamage(gameObject, GetDamage(Stat.Strength), GetHitPrecision(Stat.Strength));
             }
+        }
+
+        private int GetDamage(Stat attackType)
+        {
+            return Mathf.RoundToInt(baseStats.GetStat(attackType) * currentWeapon.value.GetWeaponWeight());
+        }
+
+        private int GetHitPrecision(Stat attackType)
+        {
+            return Mathf.RoundToInt(baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness));
         }
 
         // Animation event
@@ -145,7 +154,11 @@ namespace RPG.Combat
 
         public IEnumerable<int> GetAdditiveModifiers(Stat stat)
         {
-            if (stat == Stat.Strength)
+            if (stat == Stat.Strength && !currentWeapon.value.HasProjectile())
+            {
+                yield return currentWeapon.value.GetBonusDamagePoints();
+            }
+            else if (stat == Stat.Range && currentWeapon.value.HasProjectile())
             {
                 yield return currentWeapon.value.GetBonusDamagePoints();
             }
@@ -153,7 +166,11 @@ namespace RPG.Combat
 
         public IEnumerable<int> GetPercentageModifiers(Stat stat)
         {
-            if (stat == Stat.Strength)
+            if (stat == Stat.Strength && !currentWeapon.value.HasProjectile())
+            {
+                yield return currentWeapon.value.GetBonusDamagePercentage();
+            }
+            else if (stat == Stat.Range && currentWeapon.value.HasProjectile())
             {
                 yield return currentWeapon.value.GetBonusDamagePercentage();
             }
