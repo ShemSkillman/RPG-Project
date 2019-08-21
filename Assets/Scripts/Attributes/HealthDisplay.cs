@@ -15,7 +15,22 @@ namespace RPG.Attributes
             healthText = GetComponent<Text>();
         }
 
-        private void Update()
+        private void OnEnable()
+        {
+            health.onHealthChange += UpdateDispay;
+        }
+
+        private void OnDisable()
+        {
+            health.onHealthChange -= UpdateDispay;
+        }
+
+        private void Start()
+        {
+            UpdateDispay();
+        }
+
+        private void UpdateDispay()
         {
             healthText.text = string.Format("Health: {0}/{1}", health.GetHealthPoints(), health.GetMaxHealthPoints());
         }

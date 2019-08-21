@@ -3,6 +3,7 @@ using RPG.Saving;
 using RPG.Stats;
 using RPG.Core;
 using GameDevTV.Utils;
+using System;
 
 namespace RPG.Attributes
 {
@@ -11,9 +12,8 @@ namespace RPG.Attributes
         LazyValue<int> healthPoints;
         LazyValue<int> maxHealthPoints;
         private bool isDead = false;
-
-        public delegate void OnTakeDamage(AttackReport attackReport);
-        public event OnTakeDamage onTakeDamage;
+        
+        public Action onHealthChange;
 
         Animator animator;
         BaseStats baseStats;
@@ -58,19 +58,12 @@ namespace RPG.Attributes
             healthPoints.value = Mathf.RoundToInt(maxHealthPoints.value * oldHealthPercentage);
         }
 
-        public bool TakeDamage(GameObject instigator, int damageTaken, int hitPrecision)
+        public bool TakeDamage(GameObject instigator, int damageTaken)
         {
             if (isDead) return false;
-            if (!HasHit(instigator, hitPrecision))
-            {
-                onTakeDamage(new AttackReport(0, AttackResult.Miss));
-                return false;
-            }
-
-            damageTaken = CalculateDamage(damageTaken);
 
             healthPoints.value = Mathf.Max(healthPoints.value - damageTaken, 0);
-            onTakeDamage(new AttackReport(damageTaken, AttackResult.Hit));
+            onHealthChange();
 
             if (healthPoints.value < 1)
             {
@@ -79,22 +72,6 @@ namespace RPG.Attributes
             }
 
             return true;
-        }
-
-        private bool HasHit(GameObject instigator, int hitPrecision)
-        {
-            int swiftness = baseStats.GetStat(Stat.Swiftness);
-            float hitChance = hitPrecision / (float)(hitPrecision + swiftness);
-
-            if (Random.value < hitChance) return true;
-            else return false;
-        }
-
-        private int CalculateDamage(int damageTaken)
-        {
-            int defense = baseStats.GetStat(Stat.Defense);
-            damageTaken = Mathf.RoundToInt(Mathf.Pow(damageTaken, 2) / (damageTaken + defense));
-            return damageTaken;
         }
 
         private void GrantExperience(GameObject instigator)
@@ -141,29 +118,5 @@ namespace RPG.Attributes
                 Die();
             }
         }
-    }
-
-    public class AttackReport
-    {
-        public int damageDealt = 0;
-        public AttackResult result;
-
-        public AttackReport()
-        {
-            result = AttackResult.None;
-        }
-
-        public AttackReport(int damageDealt, AttackResult result)
-        {
-            this.damageDealt = damageDealt;
-            this.result = result;
-        }
-    }
-
-    public enum AttackResult
-    {
-        None,
-        Hit,
-        Miss
     }
 }

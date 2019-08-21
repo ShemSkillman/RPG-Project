@@ -19,12 +19,12 @@ namespace RPG.Attributes
 
         private void OnEnable()
         {
-            health.onTakeDamage += HealthChange;
+            health.onHealthChange += HealthChange;
         }
 
         private void OnDisable()
         {
-            health.onTakeDamage -= HealthChange;
+            health.onHealthChange -= HealthChange;
         }
 
         private void Start()
@@ -52,7 +52,7 @@ namespace RPG.Attributes
             healthBarForeground.transform.localScale = new Vector2(healthNormalized, 1f);
         }
 
-        public void HealthChange(AttackReport attackReport)
+        public void HealthChange()
         {
             timeSinceHealthChange = 0f;
             SetHealthBar();

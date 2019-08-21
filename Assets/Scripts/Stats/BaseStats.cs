@@ -79,7 +79,7 @@ namespace RPG.Stats
             return progression.GetRewardXP(currentLevel.value);
         }
 
-        private int GetBaseStat(Stat stat)
+        public int GetBaseStat(Stat stat)
         {
             return progression.GetStat(characterClass, stat, GetLevel());
         }

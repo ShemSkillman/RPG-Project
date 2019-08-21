@@ -117,7 +117,7 @@ namespace RPG.Control
         private void AttackBehaviour()
         {
             timeSinceLastSawPlayer = 0f;
-            fighter.Attack(player);
+            fighter.Attack(player.GetComponent<CombatTarget>());
         }
 
         private bool InAttackRangeOfPlayer()

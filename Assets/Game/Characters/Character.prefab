@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 534399219011909629}
   - component: {fileID: 3699087119926046656}
   - component: {fileID: 9223194171723729865}
+  - component: {fileID: 7731847016149263878}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -121,11 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2b5b5eb1da33624580ee441e538302a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onTakeDamage:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: RPG.Attributes.Health+TakeDamageEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &6482612450989727142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +179,18 @@ MonoBehaviour:
   characterClass: 1
   progression: {fileID: 11400000, guid: 7e26f92a999a37b40b14e8a527ec3664, type: 2}
   levelUpParticleEffect: {fileID: 0}
+--- !u!114 &7731847016149263878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5654971481426887976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae8d8582cf53dd9499f9fc73d4a2defc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3321177276859437107
 PrefabInstance:
   m_ObjectHideFlags: 0

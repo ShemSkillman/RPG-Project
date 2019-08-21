@@ -18,14 +18,15 @@ namespace RPG.Combat
 
         private void Update()
         {
-            Health targetHealth = playerFighter.GetTarget();
+            CombatTarget target = playerFighter.GetTarget();
 
-            if (targetHealth == null)
+            if (target == null)
             {
                 healthText.text = "Enemy: N/A";
             }
             else
             {
+                Health targetHealth = target.GetComponent<Health>();
                 healthText.text = string.Format("Enemy: {0}/{1}", targetHealth.GetHealthPoints(), targetHealth.GetMaxHealthPoints());
             }            
         }

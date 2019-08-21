@@ -16,7 +16,7 @@ namespace RPG.Combat
         [SerializeField] Transform leftHandTransform;
         [SerializeField] Weapon defaultWeapon;
 
-        Health target;
+        CombatTarget target;
         float timeSinceLastAttack = Mathf.Infinity;
         LazyValue<Weapon> currentWeapon;
 
@@ -54,7 +54,7 @@ namespace RPG.Combat
             weapon.Spawn(rightHandTransform, leftHandTransform, animator);
         }
 
-        public Health GetTarget()
+        public CombatTarget GetTarget()
         {
             return target;
         }
@@ -100,11 +100,13 @@ namespace RPG.Combat
             if (target == null) return;
             if (currentWeapon.value.HasProjectile())
             {
-                currentWeapon.value.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform, GetDamage(Stat.Range), GetHitPrecision(Stat.Range));
+                currentWeapon.value.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform, GetDamage(Stat.Range), 
+                    GetHitPrecision(Stat.Range), GetCriticalStrike(Stat.Range));
             }
             else
             {
-                target.TakeDamage(gameObject, GetDamage(Stat.Strength), GetHitPrecision(Stat.Strength));
+                target.HandleAttack(gameObject, GetDamage(Stat.Strength), GetHitPrecision(Stat.Strength), 
+                    GetCriticalStrike(Stat.Strength), false);
             }
         }
 
@@ -115,7 +117,12 @@ namespace RPG.Combat
 
         private int GetHitPrecision(Stat attackType)
         {
-            return Mathf.RoundToInt(baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness));
+            return Mathf.RoundToInt(baseStats.GetBaseStat(attackType) + baseStats.GetStat(Stat.Swiftness));
+        }
+
+        private int GetCriticalStrike(Stat attackType)
+        {
+            return Mathf.RoundToInt(baseStats.GetBaseStat(attackType));
         }
 
         // Animation event
@@ -124,10 +131,10 @@ namespace RPG.Combat
             Hit();
         }
 
-        public void Attack(GameObject combatTarget)
+        public void Attack(CombatTarget combatTarget)
         {
             GetComponent<ActionScheduler>().StartAction(this);
-            target = combatTarget.GetComponent<Health>();
+            target = combatTarget;
         }
 
         public bool CanAttack(GameObject combatTarget)
