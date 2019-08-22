@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
-namespace RPG.Control
+namespace RPG.Control.Cursor
 {
     public interface IRaycastable
     {
         CursorType GetCursorType();
-        bool HandleRaycast(PlayerController callingController);
+        bool HandleRaycast(GameObject player);
     }
 }

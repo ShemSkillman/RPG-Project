@@ -4,6 +4,7 @@ using RPG.Combat;
 using RPG.Core;
 using RPG.Attributes;
 using GameDevTV.Utils;
+using System.Collections.Generic;
 
 namespace RPG.Control
 {
@@ -18,30 +19,50 @@ namespace RPG.Control
         [SerializeField] float patrolSpeedFraction = 0.2f;
 
         // Cache references
-        GameObject player;
         Mover mover;
         Fighter fighter;
         Health health;
+        EntityManager entityManager;
+        List<CombatTarget> enemies = new List<CombatTarget>();
         ActionScheduler actionScheduler;
+        CombatTarget combatTarget;
 
         LazyValue<Vector3> guardPosition;
-        float timeSinceLastSawPlayer = Mathf.Infinity;
+        float timeSinceLastSawEnemy = Mathf.Infinity;
         int currentWaypointIndex = 0;
         float timeSinceWaypointArrival = Mathf.Infinity;
 
         void Awake()
         {
-            player = GameObject.FindWithTag("Player");
             mover = GetComponent<Mover>();
-            fighter = GetComponent<Fighter>();
             health = GetComponent<Health>();
+            fighter = GetComponent<Fighter>();
+            combatTarget = GetComponent<CombatTarget>();
             actionScheduler = GetComponent<ActionScheduler>();
+            entityManager = FindObjectOfType<EntityManager>();
             guardPosition = new LazyValue<Vector3>(GetInitialGuardPosition);
         }
+
+        private void OnEnable()
+        {
+            entityManager.onUpdateEntities += SetEnemies;
+        }
+
+        private void OnDisable()
+        {
+            entityManager.onUpdateEntities -= SetEnemies;
+        }
+
 
         private void Start()
         {
             guardPosition.ForceInit();
+            SetEnemies();
+        }
+
+        private void SetEnemies()
+        {
+            enemies = entityManager.GetEnemies(combatTarget, combatTarget.GetAlignment());
         }
 
         private Vector3 GetInitialGuardPosition()
@@ -53,12 +74,13 @@ namespace RPG.Control
         {
             if (health.GetIsDead()) return;
 
-            if (InAttackRangeOfPlayer() &&
-                fighter.CanAttack(player))
+            CombatTarget target = CheckProximity();
+            if (target != null &&
+                fighter.CanAttack(target))
             {
-                AttackBehaviour();
+                AttackBehaviour(target.GetComponent<CombatTarget>());
             }
-            else if (timeSinceLastSawPlayer <= suspicionTime)
+            else if (timeSinceLastSawEnemy <= suspicionTime)
             {
                 SuspiciousBehaviour();
             }
@@ -110,20 +132,37 @@ namespace RPG.Control
 
         private void SuspiciousBehaviour()
         {
-            timeSinceLastSawPlayer += Time.deltaTime;
+            timeSinceLastSawEnemy += Time.deltaTime;
             actionScheduler.CancelCurrentAction();
         }
 
-        private void AttackBehaviour()
+        private void AttackBehaviour(CombatTarget target)
         {
-            timeSinceLastSawPlayer = 0f;
-            fighter.Attack(player.GetComponent<CombatTarget>());
+            timeSinceLastSawEnemy = 0f;
+            fighter.Attack(target);
         }
 
-        private bool InAttackRangeOfPlayer()
+        private CombatTarget CheckProximity()
         {
-            float distanceToPlayer =  Vector3.Distance(transform.position, player.transform.position);
-            return distanceToPlayer <= chaseDistance;
+            if (enemies.Count < 1) return null;
+
+            float closestEnemyDistance = chaseDistance;
+            CombatTarget closestEnemy = null;
+
+            foreach(CombatTarget character in enemies)
+            {
+                if (character.GetIsDead()) continue;
+
+                float distanceToCharacter = Vector3.Distance(transform.position, character.transform.position);
+
+                if (distanceToCharacter <= closestEnemyDistance)
+                {
+                    closestEnemyDistance = distanceToCharacter;
+                    closestEnemy = character;
+                }
+            }
+
+            return closestEnemy;
         }
 
         // Called by Unity

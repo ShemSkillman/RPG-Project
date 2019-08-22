@@ -5,6 +5,7 @@ using RPG.Attributes;
 using System;
 using UnityEngine.EventSystems;
 using UnityEngine.AI;
+using RPG.Control.Cursor;
 
 namespace RPG.Control
 {
@@ -24,7 +25,6 @@ namespace RPG.Control
             public CursorType type;
             public Texture2D texture;
             public Vector2 hotspot;
-
         }
 
         [SerializeField] CursorMapping[] cursorMappings;
@@ -60,7 +60,7 @@ namespace RPG.Control
 
                 foreach (IRaycastable raycastable in raycastables)
                 {
-                    if (raycastable.HandleRaycast(this))
+                    if (raycastable.HandleRaycast(gameObject))
                     {
                         SetCursor(raycastable.GetCursorType()); 
                         return true;
@@ -146,7 +146,7 @@ namespace RPG.Control
         public void SetCursor(CursorType type)
         {
             CursorMapping mapping = GetCursorMapping(type);
-            Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
+            UnityEngine.Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
         }
 
         private CursorMapping GetCursorMapping(CursorType type)

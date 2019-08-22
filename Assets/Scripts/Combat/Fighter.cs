@@ -2,7 +2,6 @@
 using RPG.Movement;
 using RPG.Core;
 using RPG.Saving;
-using RPG.Attributes;
 using RPG.Stats;
 using System.Collections.Generic;
 using GameDevTV.Utils;
@@ -18,6 +17,7 @@ namespace RPG.Combat
 
         CombatTarget target;
         float timeSinceLastAttack = Mathf.Infinity;
+        float randomAttackTime = 0;
         LazyValue<Weapon> currentWeapon;
 
         Mover mover;
@@ -80,10 +80,11 @@ namespace RPG.Combat
         private void AttackBehaviour()
         {
             transform.LookAt(target.transform);
-            if (timeSinceLastAttack >= currentWeapon.value.GetTimeBetweenAttacks())
+            if (timeSinceLastAttack >= randomAttackTime)
             {
                 // This will trigger the Hit() event
                 timeSinceLastAttack = 0f;
+                randomAttackTime = currentWeapon.value.GetTimeBetweenAttacks() * Random.Range(0.8f, 1.2f);
                 TriggerAttackAnimation();
             }
         }
@@ -107,6 +108,12 @@ namespace RPG.Combat
             {
                 target.HandleAttack(gameObject, GetDamage(Stat.Strength), GetHitPrecision(Stat.Strength), 
                     GetCriticalStrike(Stat.Strength), false);
+            }
+
+            CombatTarget myCombatTarget = GetComponent<CombatTarget>();
+            if (myCombatTarget.GetAlignment() == target.GetAlignment())
+            {
+                myCombatTarget.ChangeAlignment(Alignment.Rogue);
             }
         }
 
@@ -137,11 +144,10 @@ namespace RPG.Combat
             target = combatTarget;
         }
 
-        public bool CanAttack(GameObject combatTarget)
+        public bool CanAttack(CombatTarget combatTarget)
         {
-            Health targetHealth = combatTarget.GetComponent<Health>();
-            if (targetHealth != null && 
-                !targetHealth.GetIsDead())
+            if (combatTarget != null && 
+                !combatTarget.GetIsDead())
             {
                 return true;
             }

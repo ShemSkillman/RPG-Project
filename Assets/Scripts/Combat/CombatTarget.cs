@@ -1,7 +1,7 @@
-﻿using RPG.Control;
-using RPG.Attributes;
+﻿using RPG.Attributes;
 using RPG.Stats;
 using UnityEngine;
+using RPG.Control.Cursor;
 
 namespace RPG.Combat
 {
@@ -10,8 +10,10 @@ namespace RPG.Combat
     {
         Health health;
         BaseStats baseStats;
+        EntityManager entityManager;
         const int criticalDamageMultiplier = 2;
         const float randomness = 0.2f;
+        [SerializeField] Alignment alignment = Alignment.Lawful;
 
         public delegate void OnAttacked(AttackReport attackReport);
         public event OnAttacked onAttacked;
@@ -20,6 +22,12 @@ namespace RPG.Combat
         {
             health = GetComponent<Health>();
             baseStats = GetComponent<BaseStats>();
+            entityManager = FindObjectOfType<EntityManager>();
+        }
+
+        private void Start()
+        {
+            entityManager.RegisterEntity(this, alignment);
         }
 
         public bool HandleAttack(GameObject instigator, int damageTaken, int attackPrecision, int criticalStrike, bool isRanged)
@@ -27,7 +35,7 @@ namespace RPG.Combat
             if (GetIsDead()) return false;
             AttackReport attackReport = new AttackReport();
             
-            if (!IsHit(instigator, attackPrecision))
+            if (!IsHit(attackPrecision))
             {
                 attackReport.result = AttackResult.Miss;
                 onAttacked(attackReport);
@@ -43,7 +51,13 @@ namespace RPG.Combat
             return true;
         }
 
-        private bool IsHit(GameObject instigator, int hitPrecision)
+        public void ChangeAlignment(Alignment newAlignment)
+        {
+            entityManager.ChangeAlignment(this, alignment, newAlignment);
+            alignment = newAlignment;
+        }
+
+        private bool IsHit(int hitPrecision)
         {
             int swiftness = baseStats.GetStat(Stat.Swiftness);
             float hitChance = hitPrecision / (float)(hitPrecision + swiftness);
@@ -83,12 +97,12 @@ namespace RPG.Combat
             else return false;
         }
 
-        public bool HandleRaycast(PlayerController callingController)
+        public bool HandleRaycast(GameObject player)
         {
             if (gameObject.tag == "Player") return false;
 
-            Fighter playerFighter = callingController.GetComponent<Fighter>();
-            if (!playerFighter.CanAttack(gameObject)) return false;
+            Fighter playerFighter = player.GetComponent<Fighter>();
+            if (!playerFighter.CanAttack(this)) return false;
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -106,6 +120,11 @@ namespace RPG.Combat
         public bool GetIsDead()
         {
             return health.GetIsDead();
+        }
+
+        public Alignment GetAlignment()
+        {
+            return alignment;
         }
     }    
 }

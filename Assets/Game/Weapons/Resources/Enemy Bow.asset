@@ -16,7 +16,7 @@ MonoBehaviour:
     type: 3}
   weaponAnimatorOverride: {fileID: 22100000, guid: 89f688be149ca374792cb571f89fb2db,
     type: 2}
-  weaponRange: 15
+  weaponRange: 10
   bonusDamagePoints: 24
   bonusDamagePercentage: 0
   weaponWeight: 2

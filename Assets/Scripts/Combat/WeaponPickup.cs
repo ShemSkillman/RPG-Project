@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
-using RPG.Control;
+using RPG.Control.Cursor;
 
 namespace RPG.Combat
 {
@@ -46,11 +45,11 @@ namespace RPG.Combat
             }
         }
 
-        public bool HandleRaycast(PlayerController callingController)
+        public bool HandleRaycast(GameObject player)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Pickup(callingController.GetComponent<Fighter>());
+                Pickup(player.GetComponent<Fighter>());
             }
 
             return true;
