@@ -39,7 +39,6 @@ namespace RPG.SceneManagement
             DontDestroyOnLoad(gameObject);
 
             Fader fader = FindObjectOfType<Fader>();
-            yield return new WaitUntil(fader.GetFaderInUse);
 
             yield return fader.FadeOut(fadeDuration);
 
