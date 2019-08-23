@@ -17,7 +17,6 @@ namespace RPG.Combat
 
         CombatTarget target;
         float timeSinceLastAttack = Mathf.Infinity;
-        float randomAttackTime = 0;
         LazyValue<Weapon> currentWeapon;
 
         Mover mover;
@@ -80,11 +79,10 @@ namespace RPG.Combat
         private void AttackBehaviour()
         {
             transform.LookAt(target.transform);
-            if (timeSinceLastAttack >= randomAttackTime)
+            if (timeSinceLastAttack >= currentWeapon.value.GetTimeBetweenAttacks())
             {
                 // This will trigger the Hit() event
                 timeSinceLastAttack = 0f;
-                randomAttackTime = currentWeapon.value.GetTimeBetweenAttacks() * Random.Range(0.8f, 1.2f);
                 TriggerAttackAnimation();
             }
         }
@@ -99,17 +97,22 @@ namespace RPG.Combat
         private void Hit()
         {
             if (target == null) return;
+            
             if (currentWeapon.value.HasProjectile())
             {
-                currentWeapon.value.LaunchProjectile(target, gameObject, rightHandTransform, leftHandTransform, GetDamage(Stat.Range), 
-                    GetHitPrecision(Stat.Range), GetCriticalStrike(Stat.Range));
+                currentWeapon.value.LaunchProjectile(target, rightHandTransform, leftHandTransform, 
+                    new AttackPayload(baseStats, Stat.Range, currentWeapon.value));
             }
             else
             {
-                target.HandleAttack(gameObject, GetDamage(Stat.Strength), GetHitPrecision(Stat.Strength), 
-                    GetCriticalStrike(Stat.Strength), false);
+                target.HandleAttack(new AttackPayload(baseStats, Stat.Strength, currentWeapon.value));
             }
 
+            CheckFriendlyFire();
+        }
+
+        private void CheckFriendlyFire()
+        {
             CombatTarget myCombatTarget = GetComponent<CombatTarget>();
             if (myCombatTarget.GetAlignment() == target.GetAlignment())
             {
@@ -117,20 +120,6 @@ namespace RPG.Combat
             }
         }
 
-        private int GetDamage(Stat attackType)
-        {
-            return Mathf.RoundToInt(baseStats.GetStat(attackType) * currentWeapon.value.GetWeaponWeight());
-        }
-
-        private int GetHitPrecision(Stat attackType)
-        {
-            return Mathf.RoundToInt(baseStats.GetBaseStat(attackType) + baseStats.GetStat(Stat.Swiftness));
-        }
-
-        private int GetCriticalStrike(Stat attackType)
-        {
-            return Mathf.RoundToInt(baseStats.GetBaseStat(attackType));
-        }
 
         // Animation event
         private void Shoot()

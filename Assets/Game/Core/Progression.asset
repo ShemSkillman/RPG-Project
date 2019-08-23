@@ -43,7 +43,7 @@ MonoBehaviour:
       statMultiplier: 0.5
     - stat: 4
       statMultiplier: 0.5
-  healthMultiplier: 50
+  healthMultiplier: 40
   statTable: 180000001c000000200000002400000028000000
   xpRewardTable: 050000000a0000000f0000001400000019000000
   levelXPTable: 2300000073000000fa000000c2010000d5020000

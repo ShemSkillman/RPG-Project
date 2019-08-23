@@ -12,7 +12,6 @@ namespace RPG.Combat
         BaseStats baseStats;
         EntityManager entityManager;
         const int criticalDamageMultiplier = 2;
-        const float randomness = 0.2f;
         [SerializeField] Alignment alignment = Alignment.Lawful;
 
         public delegate void OnAttacked(AttackReport attackReport);
@@ -30,20 +29,20 @@ namespace RPG.Combat
             entityManager.RegisterEntity(this, alignment);
         }
 
-        public bool HandleAttack(GameObject instigator, int damageTaken, int attackPrecision, int criticalStrike, bool isRanged)
+        public bool HandleAttack(AttackPayload attackPayload)
         {
             if (GetIsDead()) return false;
             AttackReport attackReport = new AttackReport();
             
-            if (!IsHit(attackPrecision))
+            if (!IsHit(attackPayload.hitPrecision))
             {
                 attackReport.result = AttackResult.Miss;
                 onAttacked(attackReport);
                 return false;
             }
 
-            damageTaken = CalculateDamage(damageTaken, criticalStrike, isRanged, out attackReport);
-            health.TakeDamage(instigator, damageTaken);
+            int damage = CalculateDamage(attackPayload.damage, attackPayload.attackPoints, attackPayload.attackType, out attackReport);
+            health.TakeDamage(attackPayload.instigator, damage);
 
             if (GetIsDead()) attackReport.result = AttackResult.TargetDown;
             onAttacked(attackReport);
@@ -51,50 +50,49 @@ namespace RPG.Combat
             return true;
         }
 
-        public void ChangeAlignment(Alignment newAlignment)
-        {
-            entityManager.ChangeAlignment(this, alignment, newAlignment);
-            alignment = newAlignment;
-        }
-
         private bool IsHit(int hitPrecision)
         {
-            int swiftness = baseStats.GetStat(Stat.Swiftness);
-            float hitChance = hitPrecision / (float)(hitPrecision + swiftness);
+            float hitChance = hitPrecision / (float)(hitPrecision + baseStats.GetStat(Stat.Swiftness));
 
             if (Random.value <= hitChance) return true;
             else return false;
         }
 
-        private int CalculateDamage(int damageTaken, int criticalStrike, bool isRanged, out AttackReport attackReport)
+        private int CalculateDamage(int damage, int attackPoints, Stat attackType, out AttackReport attackReport)
         {
             attackReport = new AttackReport(AttackResult.Hit);
+            
+            float defenseMult = attackPoints / (float)(baseStats.GetStat(Stat.Defense) + attackPoints);
+            damage = Mathf.RoundToInt(damage * defenseMult);
 
-            int defense = baseStats.GetStat(Stat.Defense);
-            damageTaken = Mathf.RoundToInt(Mathf.Pow(damageTaken, 2) / (damageTaken + defense));
-
-            if (IsCriticalHit(criticalStrike, isRanged))
+            if (IsCriticalHit(attackPoints, attackType))
             {
-                damageTaken *= criticalDamageMultiplier;
+                damage *= criticalDamageMultiplier;
                 attackReport.result = AttackResult.CriticalHit;
             }
-            
-            damageTaken = Mathf.RoundToInt(Random.Range(1 - randomness, 1 + randomness) * damageTaken);
-            attackReport.damageDealt = damageTaken;
 
-            return damageTaken;
+            attackReport.damageDealt = damage;
+
+            return damage;
         }
 
-        private bool IsCriticalHit(int criticalStrike, bool isRanged)
+        private bool IsCriticalHit(int attackPoints, Stat attackType)
         {
-            Stat attackType = Stat.Strength;
-            if (isRanged) attackType = Stat.Range;
-
-            int critProtection = baseStats.GetBaseStat(attackType) + baseStats.GetStat(Stat.Defense);
-            float critChance = criticalStrike / (float)(criticalStrike + critProtection);
+            float critChance = attackPoints / (float)(attackPoints + GetCritProtection(attackType));
 
             if (Random.value <= critChance) return true;
             else return false;
+        }
+
+        private int GetCritProtection(Stat attackType)
+        {
+            return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Defense);
+        }
+
+        public void ChangeAlignment(Alignment newAlignment)
+        {
+            entityManager.ChangeAlignment(this, alignment, newAlignment);
+            alignment = newAlignment;
         }
 
         public bool HandleRaycast(GameObject player)

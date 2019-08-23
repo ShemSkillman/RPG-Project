@@ -7,9 +7,13 @@ namespace RPG.Stats
     [CreateAssetMenu(fileName = "Progression", menuName = "Stats/New Progression")]
     public class Progression : ScriptableObject
     {
+        [Header("Character Customization")]
         [SerializeField] Character[] characters;
 
+        [Header("Other configs")]
         [SerializeField] float healthMultiplier = 1f;
+
+        [Header("Stock Stat tables")]
         [SerializeField] public int[] statTable;
         [SerializeField] int[] xpRewardTable;
         [SerializeField] int[] levelXPTable;
@@ -53,7 +57,7 @@ namespace RPG.Stats
             }
 
             return stockStat;
-        }        
+        } 
 
         private void BuildLookUp()
         {

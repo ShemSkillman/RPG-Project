@@ -19,18 +19,12 @@ namespace RPG.Combat
         CombatTarget target;
         bool isStopped, missedTarget;
         Vector3 targetOffset;
-        public int damage;
-        GameObject instigator;
-        int hitPrecision;
-        int criticalStrike;
+        AttackPayload attackPayload;
 
-        public void SetTarget(CombatTarget target, GameObject instigator, int damage, int hitPrecision, int criticalStrike)
+        public void SetTarget(CombatTarget target, AttackPayload attackPayload)
         {
             this.target = target;
-            this.damage = damage;
-            this.instigator = instigator;
-            this.hitPrecision = hitPrecision;
-            this.criticalStrike = criticalStrike;
+            this.attackPayload = attackPayload;
 
             if (!isHoming) AimAtTarget();
             Destroy(gameObject, maxLifeTime);
@@ -88,7 +82,7 @@ namespace RPG.Combat
             if (other.gameObject.GetComponent<CombatTarget>() != target) return;
             if (target.GetIsDead() || isStopped == true || missedTarget) return;
 
-            missedTarget = !target.HandleAttack(instigator, damage, hitPrecision, criticalStrike, true);
+            missedTarget = !target.HandleAttack(attackPayload);
             if (missedTarget) return;
 
             isStopped = true;
