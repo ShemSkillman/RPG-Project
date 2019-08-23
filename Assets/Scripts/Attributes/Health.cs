@@ -4,6 +4,7 @@ using RPG.Stats;
 using RPG.Core;
 using GameDevTV.Utils;
 using System;
+using System.Collections;
 
 namespace RPG.Attributes
 {
@@ -12,6 +13,8 @@ namespace RPG.Attributes
         LazyValue<int> healthPoints;
         LazyValue<int> maxHealthPoints;
         private bool isDead = false;
+        
+        [SerializeField] float sinkSpeed = 1f;
         
         public Action onHealthChange;
 
@@ -87,6 +90,20 @@ namespace RPG.Attributes
             isDead = true;
             animator.SetTrigger("death");
             GetComponent<ActionScheduler>().CancelCurrentAction();
+            StartCoroutine(BodySink());
+        }
+
+        private IEnumerator BodySink()
+        {
+            float sinkDistance = 0f;
+            float maxSinkDistance = UnityEngine.Random.value;
+            while (sinkDistance < maxSinkDistance)
+            {
+                sinkDistance += Time.deltaTime * sinkSpeed;
+                transform.Translate(Vector3.down * Time.deltaTime * sinkSpeed);
+                
+                yield return null;
+            }
         }
 
         public bool GetIsDead()

@@ -31,6 +31,15 @@ namespace RPG.Combat
             onUpdateEntities();
         }
 
+        public void RemoveEntity(CombatTarget entity, Alignment alignment)
+        {
+            if (entities[alignment].Contains(entity))
+            {
+                entities[alignment].Remove(entity);
+                onUpdateEntities();
+            }
+        }
+
         public void ChangeAlignment(CombatTarget entity, Alignment oldAlignment, Alignment newAlignment)
         {
             entities[oldAlignment].Remove(entity);

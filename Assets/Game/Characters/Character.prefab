@@ -122,6 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2b5b5eb1da33624580ee441e538302a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sinkSpeed: 0.005
 --- !u!114 &6482612450989727142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,7 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae8d8582cf53dd9499f9fc73d4a2defc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isHostile: 0
+  alignment: 0
 --- !u!1001 &3321177276859437107
 PrefabInstance:
   m_ObjectHideFlags: 0
