@@ -97,15 +97,15 @@ namespace RPG.Combat
         private void Hit()
         {
             if (target == null) return;
-            
+
+            AttackPayload attackPayload = new AttackPayload(baseStats, currentWeapon.value);
             if (currentWeapon.value.HasProjectile())
             {
-                currentWeapon.value.LaunchProjectile(target, rightHandTransform, leftHandTransform, 
-                    new AttackPayload(baseStats, Stat.Range, currentWeapon.value));
+                currentWeapon.value.LaunchProjectile(target, rightHandTransform, leftHandTransform, attackPayload);
             }
             else
             {
-                target.HandleAttack(new AttackPayload(baseStats, Stat.Strength, currentWeapon.value));
+                target.HandleAttack(attackPayload);
             }
 
             CheckFriendlyFire();

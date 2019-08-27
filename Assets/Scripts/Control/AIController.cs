@@ -5,6 +5,7 @@ using RPG.Core;
 using RPG.Attributes;
 using GameDevTV.Utils;
 using System.Collections.Generic;
+using System;
 
 namespace RPG.Control
 {
@@ -25,7 +26,8 @@ namespace RPG.Control
         EntityManager entityManager;
         List<CombatTarget> enemies = new List<CombatTarget>();
         ActionScheduler actionScheduler;
-        CombatTarget combatTarget;
+        CombatTarget myCombatTarget;
+        CombatTarget currentTarget;
 
         LazyValue<Vector3> guardPosition;
         float timeSinceLastSawEnemy = Mathf.Infinity;
@@ -37,7 +39,7 @@ namespace RPG.Control
             mover = GetComponent<Mover>();
             health = GetComponent<Health>();
             fighter = GetComponent<Fighter>();
-            combatTarget = GetComponent<CombatTarget>();
+            myCombatTarget = GetComponent<CombatTarget>();
             actionScheduler = GetComponent<ActionScheduler>();
             entityManager = FindObjectOfType<EntityManager>();
             guardPosition = new LazyValue<Vector3>(GetInitialGuardPosition);
@@ -62,7 +64,7 @@ namespace RPG.Control
 
         private void SetEnemies()
         {
-            enemies = entityManager.GetEnemies(combatTarget, combatTarget.GetAlignment());
+            enemies = entityManager.GetEnemies(myCombatTarget, myCombatTarget.GetAlignment());
         }
 
         private Vector3 GetInitialGuardPosition()
@@ -74,11 +76,11 @@ namespace RPG.Control
         {
             if (health.GetIsDead()) return;
 
-            CombatTarget target = CheckProximity();
-            if (target != null &&
-                fighter.CanAttack(target))
+            currentTarget = CheckProximity();
+            if (currentTarget != null &&
+                fighter.CanAttack(currentTarget))
             {
-                AttackBehaviour(target.GetComponent<CombatTarget>());
+                AttackBehaviour(currentTarget.GetComponent<CombatTarget>());
             }
             else if (timeSinceLastSawEnemy <= suspicionTime)
             {
@@ -144,6 +146,8 @@ namespace RPG.Control
 
         private CombatTarget CheckProximity()
         {
+            if (fighter.CanAttack(currentTarget)) return currentTarget;
+
             if (enemies.Count < 1) return null;
 
             float closestEnemyDistance = chaseDistance;

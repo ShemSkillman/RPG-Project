@@ -19,6 +19,6 @@ MonoBehaviour:
   weaponRange: 2.4
   bonusDamagePoints: 24
   bonusDamagePercentage: 0
-  weaponWeight: 2
+  weaponWeight: 4
   isRightHanded: 1
   projectile: {fileID: 0}

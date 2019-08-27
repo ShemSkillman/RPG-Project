@@ -11,7 +11,9 @@ namespace RPG.Combat
         Health health;
         BaseStats baseStats;
         EntityManager entityManager;
+
         const int criticalDamageMultiplier = 2;
+
         [SerializeField] Alignment alignment = Alignment.Lawful;
 
         public delegate void OnAttacked(AttackReport attackReport);
@@ -32,17 +34,16 @@ namespace RPG.Combat
         public bool HandleAttack(AttackPayload attackPayload)
         {
             if (GetIsDead()) return false;
-            AttackReport attackReport = new AttackReport();
+            AttackReport attackReport = new AttackReport(AttackResult.Miss);
             
-            if (!IsHit(attackPayload.hitPrecision))
+            if (!IsHit(attackPayload))
             {
-                attackReport.result = AttackResult.Miss;
                 onAttacked(attackReport);
                 return false;
             }
 
-            int damage = CalculateDamage(attackPayload.damage, attackPayload.attackPoints, attackPayload.attackType, out attackReport);
-            health.TakeDamage(attackPayload.instigator, damage);
+            CalculateDamage(attackPayload, attackReport);
+            health.TakeDamage(attackPayload.instigator, attackPayload.damage);
 
             if (GetIsDead()) attackReport.result = AttackResult.TargetDown;
             onAttacked(attackReport);
@@ -50,35 +51,36 @@ namespace RPG.Combat
             return true;
         }
 
-        private bool IsHit(int hitPrecision)
+        private bool IsHit(AttackPayload attackPayload)
         {
-            float hitChance = hitPrecision / (float)(hitPrecision + baseStats.GetStat(Stat.Swiftness));
+            if (attackPayload.attackType == Stat.Range) return true;
+
+            int evasion = baseStats.GetStat(Stat.Swiftness) * 2;
+            float hitChance = attackPayload.hitPrecision / (float)(attackPayload.hitPrecision + evasion);
 
             if (Random.value <= hitChance) return true;
             else return false;
         }
 
-        private int CalculateDamage(int damage, int attackPoints, Stat attackType, out AttackReport attackReport)
+        private void CalculateDamage(AttackPayload attackPayload, AttackReport attackReport)
         {
-            attackReport = new AttackReport(AttackResult.Hit);
+            attackReport.result = AttackResult.Hit;
             
-            float defenseMult = attackPoints / (float)(baseStats.GetStat(Stat.Defense) + attackPoints);
-            damage = Mathf.RoundToInt(damage * defenseMult);
+            float damageReduction = attackPayload.attackPoints / (float)(baseStats.GetStat(Stat.Defense) + attackPayload.attackPoints);
+            attackPayload.damage = Mathf.RoundToInt(attackPayload.damage * damageReduction);
 
-            if (IsCriticalHit(attackPoints, attackType))
+            if (IsCriticalHit(attackPayload))
             {
-                damage *= criticalDamageMultiplier;
+                attackPayload.damage *= criticalDamageMultiplier;
                 attackReport.result = AttackResult.CriticalHit;
             }
 
-            attackReport.damageDealt = damage;
-
-            return damage;
+            attackReport.damageDealt = attackPayload.damage;
         }
 
-        private bool IsCriticalHit(int attackPoints, Stat attackType)
+        private bool IsCriticalHit(AttackPayload attackPayload)
         {
-            float critChance = attackPoints / (float)(attackPoints + GetCritProtection(attackType));
+            float critChance = (attackPayload.critStrike / (float)(attackPayload.critStrike + GetCritProtection(attackPayload.attackType)));
 
             if (Random.value <= critChance) return true;
             else return false;

@@ -1,4 +1,5 @@
-﻿using RPG.Stats;
+﻿using System;
+using RPG.Stats;
 using UnityEngine;
 
 namespace RPG.Combat
@@ -8,27 +9,42 @@ namespace RPG.Combat
         public GameObject instigator;
         public Stat attackType;
         public int attackPoints;
+        public int critStrike;
         public int damage;
         public int hitPrecision;
 
-        public AttackPayload(BaseStats baseStats, Stat attackType, Weapon weapon)
+        public AttackPayload(BaseStats baseStats, Weapon weapon)
         {
             instigator = baseStats.gameObject;
-            this.attackType = attackType;
+            attackType = GetAttackType(weapon);
             attackPoints = baseStats.GetStat(attackType);
-            damage = GetDamage(baseStats, attackType, weapon);
-            hitPrecision = GetHitPrecision(baseStats, attackType);
+            critStrike = GetCriticalStrike(baseStats, weapon);
+            damage = GetDamage(baseStats, weapon);
+            hitPrecision = GetHitPrecision(baseStats, weapon);
         }
 
-        private int GetDamage(BaseStats baseStats, Stat attackType, Weapon weapon)
+        private Stat GetAttackType(Weapon weapon)
+        {
+            Stat attackType = Stat.Strength;
+            if (weapon.HasProjectile()) attackType = Stat.Range;
+            return attackType;
+        }
+
+        private int GetCriticalStrike(BaseStats baseStats, Weapon weapon)
+        {
+            return Mathf.RoundToInt(((baseStats.GetStat(attackType) * weapon.GetWeaponWeight()) * 2f));
+        }
+
+        public int GetHitPrecision(BaseStats baseStats, Weapon weapon)
+        {
+            return Mathf.RoundToInt((baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness)) * (4 / weapon.GetWeaponWeight()));
+        }
+
+        private int GetDamage(BaseStats baseStats, Weapon weapon)
         {
             return Mathf.RoundToInt(baseStats.GetStat(attackType) * weapon.GetWeaponWeight());
         }
 
-        public int GetHitPrecision(BaseStats baseStats, Stat attackType)
-        {
-            return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness);
-        }
     }
 }
 

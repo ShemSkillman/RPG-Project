@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using RPG.Core;
 using RPG.Saving;
 using RPG.Attributes;
+using RPG.Stats;
 
 namespace RPG.Movement
 {
@@ -18,6 +19,12 @@ namespace RPG.Movement
             navMeshAgent = GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
             health = GetComponent<Health>();
+        }
+
+        private void Start()
+        {
+            BaseStats baseStats = GetComponent<BaseStats>();
+            maxSpeed = maxSpeed * Mathf.Clamp01(baseStats.GetStat(Stat.Swiftness) / (float)baseStats.GetStat(Stat.Defense));
         }
 
         void Update()
