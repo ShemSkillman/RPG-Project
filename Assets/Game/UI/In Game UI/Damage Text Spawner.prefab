@@ -45,3 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageText: {fileID: 5398089305748701790, guid: 8a1c95466e0852b448ab5dc434a06557,
     type: 3}
+  textMaxIdleTime: 0.5

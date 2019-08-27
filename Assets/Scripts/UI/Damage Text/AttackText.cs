@@ -5,16 +5,26 @@ namespace RPG.UI.DamageText
 {
     public class AttackText : MonoBehaviour
     {
+        TextMeshProUGUI textMeshPro;
+
+        private void Awake()
+        {
+            textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
+        }
+
         public void DestroyText()
         {
             Destroy(gameObject);
         }
 
-        public void SetText(string message, Color color)
+        public void SetText(string message)
         {
-            TextMeshProUGUI textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
-            textMeshPro.color = color;
             textMeshPro.text = message;
+        }
+
+        public void SetTextColor(Color color)
+        {
+            textMeshPro.color = color;
         }
     }
 }

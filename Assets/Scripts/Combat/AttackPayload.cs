@@ -32,12 +32,12 @@ namespace RPG.Combat
 
         private int GetCriticalStrike(BaseStats baseStats, Weapon weapon)
         {
-            return Mathf.RoundToInt(((baseStats.GetStat(attackType) * weapon.GetWeaponWeight()) * 2f));
+            return baseStats.GetStat(attackType) * 2;
         }
 
         public int GetHitPrecision(BaseStats baseStats, Weapon weapon)
         {
-            return Mathf.RoundToInt((baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness)) * (4 / weapon.GetWeaponWeight()));
+            return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness);
         }
 
         private int GetDamage(BaseStats baseStats, Weapon weapon)
