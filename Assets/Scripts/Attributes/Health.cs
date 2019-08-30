@@ -5,6 +5,7 @@ using RPG.Core;
 using GameDevTV.Utils;
 using System;
 using System.Collections;
+using UnityEngine.Events;
 
 namespace RPG.Attributes
 {
@@ -16,7 +17,7 @@ namespace RPG.Attributes
         
         [SerializeField] float sinkSpeed = 1f;
         
-        public Action onHealthChange;
+        public UnityEvent onHealthChange;
 
         Animator animator;
         BaseStats baseStats;
@@ -66,7 +67,7 @@ namespace RPG.Attributes
             if (isDead) return false;
 
             healthPoints.value = Mathf.Max(healthPoints.value - damageTaken, 0);
-            onHealthChange();
+            onHealthChange.Invoke();
 
             if (healthPoints.value < 1)
             {

@@ -17,12 +17,12 @@ namespace RPG.Attributes
 
         private void OnEnable()
         {
-            health.onHealthChange += UpdateDispay;
+            health.onHealthChange.AddListener(UpdateDispay);
         }
 
         private void OnDisable()
         {
-            health.onHealthChange -= UpdateDispay;
+            health.onHealthChange.RemoveListener(UpdateDispay);
         }
 
         private void Start()

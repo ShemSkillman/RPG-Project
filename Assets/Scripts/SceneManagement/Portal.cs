@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using RPG.Control;
+using RPG.Core;
 
 namespace RPG.SceneManagement
 {
@@ -40,12 +41,14 @@ namespace RPG.SceneManagement
 
             Fader fader = FindObjectOfType<Fader>();
 
+            PlayerControl(false);
             yield return fader.FadeOut(fadeDuration);
 
             SavingWrapper savingWrapper = FindObjectOfType<SavingWrapper>();
             savingWrapper.Save();
 
             yield return SceneManager.LoadSceneAsync(sceneToLoadIndex);
+            PlayerControl(false);
 
             savingWrapper.Load();
 
@@ -55,9 +58,20 @@ namespace RPG.SceneManagement
             savingWrapper.Save();
 
             yield return new WaitForSeconds(fadeWaitTime);
-            yield return fader.FadeIn(fadeDuration);
+            fader.FadeIn(fadeDuration);
 
+            PlayerControl(true);
             Destroy(gameObject);
+        }
+
+        private void PlayerControl(bool isControl)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            PlayerController playerController = player.GetComponent<PlayerController>();
+            ActionScheduler actionScheduler = player.GetComponent<ActionScheduler>();
+
+            playerController.enabled = isControl;
+            if (!isControl) actionScheduler.CancelCurrentAction();
         }
 
         private Portal GetOtherPortal()
@@ -80,10 +94,8 @@ namespace RPG.SceneManagement
             if (otherPortal == null) return;
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             NavMeshAgent playerNavMeshAgent = player.GetComponent<NavMeshAgent>();
-            playerNavMeshAgent.enabled = false;
-            player.transform.position = otherPortal.spawnPoint.position;
+            playerNavMeshAgent.Warp(otherPortal.spawnPoint.position);
             player.transform.rotation = otherPortal.spawnPoint.rotation;
-            playerNavMeshAgent.enabled = true;
         }
     }
 }

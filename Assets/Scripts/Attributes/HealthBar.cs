@@ -19,12 +19,12 @@ namespace RPG.Attributes
 
         private void OnEnable()
         {
-            health.onHealthChange += HealthChange;
+            health.onHealthChange.AddListener(HealthChange);
         }
 
         private void OnDisable()
         {
-            health.onHealthChange -= HealthChange;
+            health.onHealthChange.RemoveListener(HealthChange);
         }
 
         private void Start()

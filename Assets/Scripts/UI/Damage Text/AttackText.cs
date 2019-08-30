@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using RPG.Combat;
 using TMPro;
 
 namespace RPG.UI.DamageText
@@ -6,6 +7,10 @@ namespace RPG.UI.DamageText
     public class AttackText : MonoBehaviour
     {
         TextMeshProUGUI textMeshPro;
+        
+        int missCount = 0;
+        int damageCount = 0;
+        bool isDead = false;
 
         private void Awake()
         {
@@ -17,14 +22,48 @@ namespace RPG.UI.DamageText
             Destroy(gameObject);
         }
 
-        public void SetText(string message)
+        public void ExtractReport(AttackReport attackReport)
         {
-            textMeshPro.text = message;
+
+            switch (attackReport.result)
+            {
+                case AttackResult.Miss:
+                    missCount++;
+                    break;
+                case AttackResult.TargetDown:
+                    isDead = true;
+                    break;
+                case AttackResult.Hit:
+                    damageCount += attackReport.damageDealt;
+                    break;
+                case AttackResult.CriticalHit:
+                    damageCount += attackReport.damageDealt;
+                    break;
+
+            }
+            
+            SetText();
         }
 
-        public void SetTextColor(Color color)
+        private void SetText()
         {
-            textMeshPro.color = color;
+            string message = "";
+
+            if (isDead)
+            {
+                message = "Dead!";
+            }
+            else if (damageCount > 0)
+            {
+                message += damageCount.ToString();
+            }
+            else if (missCount > 0)
+            {
+                if (missCount == 1) message = "Dodge!";
+                else message += "Dodge x" + missCount.ToString();
+            }
+
+            textMeshPro.text = message;
         }
     }
 }
