@@ -13,7 +13,7 @@ namespace RPG.Combat
         public int damage;
         public int hitPrecision;
 
-        public AttackPayload(BaseStats baseStats, Weapon weapon)
+        public AttackPayload(BaseStats baseStats, WeaponConfig weapon)
         {
             instigator = baseStats.gameObject;
             attackType = GetAttackType(weapon);
@@ -23,24 +23,24 @@ namespace RPG.Combat
             hitPrecision = GetHitPrecision(baseStats, weapon);
         }
 
-        private Stat GetAttackType(Weapon weapon)
+        private Stat GetAttackType(WeaponConfig weapon)
         {
             Stat attackType = Stat.Strength;
             if (weapon.HasProjectile()) attackType = Stat.Range;
             return attackType;
         }
 
-        private int GetCriticalStrike(BaseStats baseStats, Weapon weapon)
+        private int GetCriticalStrike(BaseStats baseStats, WeaponConfig weapon)
         {
             return baseStats.GetStat(attackType) * 2;
         }
 
-        public int GetHitPrecision(BaseStats baseStats, Weapon weapon)
+        public int GetHitPrecision(BaseStats baseStats, WeaponConfig weapon)
         {
             return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness);
         }
 
-        private int GetDamage(BaseStats baseStats, Weapon weapon)
+        private int GetDamage(BaseStats baseStats, WeaponConfig weapon)
         {
             return Mathf.RoundToInt(baseStats.GetStat(attackType) * weapon.GetWeaponWeight());
         }

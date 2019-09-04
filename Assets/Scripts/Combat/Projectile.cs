@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using RPG.Attributes;
+using UnityEngine.Events;
 
 namespace RPG.Combat
 {
@@ -15,6 +16,7 @@ namespace RPG.Combat
         [SerializeField] float maxLifeTime = 10f;
         [SerializeField] GameObject[] destroyOnHit;
         [SerializeField] float lifeAfterImpact = 3f;
+        public UnityEvent onHit;
 
         CombatTarget target;
         bool isStopped, missedTarget;
@@ -85,6 +87,7 @@ namespace RPG.Combat
             missedTarget = !target.HandleAttack(attackPayload);
             if (missedTarget) return;
 
+            onHit.Invoke();
             isStopped = true;
             if (hitEffect != null) Instantiate(hitEffect, transform.position, transform.rotation);
 

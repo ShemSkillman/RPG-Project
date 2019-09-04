@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 805aa72208232cf4f9e8cff920b952f3, type: 3}
   m_Name: Pitchfork
   m_EditorClassIdentifier: 
-  weaponPrefab: {fileID: 1298139292293487150, guid: e247fb6d6a1db164281dad2a52c14ce0,
+  weaponPrefab: {fileID: 7455332861712373183, guid: e247fb6d6a1db164281dad2a52c14ce0,
     type: 3}
   weaponAnimatorOverride: {fileID: 22100000, guid: 7678100c22ac083469b0ff3a5a3b19b6,
     type: 2}

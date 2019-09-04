@@ -13,10 +13,11 @@ namespace RPG.Combat
         // Configuration parameters
         [SerializeField] Transform rightHandTransform;
         [SerializeField] Transform leftHandTransform;
-        [SerializeField] Weapon defaultWeapon;
+        [SerializeField] WeaponConfig defaultWeapon;
 
         CombatTarget target;
         float timeSinceLastAttack = Mathf.Infinity;
+        WeaponConfig currentWeaponConfig;
         LazyValue<Weapon> currentWeapon;
 
         Mover mover;
@@ -28,6 +29,7 @@ namespace RPG.Combat
             mover = GetComponent<Mover>();
             animator = GetComponent<Animator>();
             baseStats = GetComponent<BaseStats>();
+            currentWeaponConfig = defaultWeapon;
             currentWeapon = new LazyValue<Weapon>(GetInitialCurrentWeapon);
         }
 
@@ -38,19 +40,18 @@ namespace RPG.Combat
 
         private Weapon GetInitialCurrentWeapon()
         {
-            AttachWeapon(defaultWeapon);
-            return defaultWeapon;
+            return AttachWeapon(defaultWeapon);
         }
 
-        public void EquipWeapon(Weapon weapon)
+        public void EquipWeapon(WeaponConfig weapon)
         {
-            currentWeapon.value = weapon;
-            AttachWeapon(weapon);
+            currentWeaponConfig = weapon;
+            currentWeapon.value = AttachWeapon(weapon);
         }
 
-        private void AttachWeapon(Weapon weapon)
+        private Weapon AttachWeapon(WeaponConfig weapon)
         {
-            weapon.Spawn(rightHandTransform, leftHandTransform, animator);
+            return weapon.Spawn(rightHandTransform, leftHandTransform, animator);
         }
 
         public CombatTarget GetTarget()
@@ -64,7 +65,7 @@ namespace RPG.Combat
 
             if (target == null || target.GetIsDead()) return;
 
-            bool outOfRange = Vector3.Distance(transform.position, target.transform.position) > currentWeapon.value.GetWeaponRange();
+            bool outOfRange = Vector3.Distance(transform.position, target.transform.position) > currentWeaponConfig.GetWeaponRange();
             if (outOfRange)
             {
                 mover.MoveTo(target.transform.position, 1f);
@@ -79,7 +80,7 @@ namespace RPG.Combat
         private void AttackBehaviour()
         {
             transform.LookAt(target.transform);
-            if (timeSinceLastAttack >= currentWeapon.value.GetTimeBetweenAttacks())
+            if (timeSinceLastAttack >= currentWeaponConfig.GetTimeBetweenAttacks())
             {
                 // This will trigger the Hit() event
                 timeSinceLastAttack = 0f;
@@ -98,14 +99,19 @@ namespace RPG.Combat
         {
             if (target == null) return;
 
-            AttackPayload attackPayload = new AttackPayload(baseStats, currentWeapon.value);
-            if (currentWeapon.value.HasProjectile())
+            AttackPayload attackPayload = new AttackPayload(baseStats, currentWeaponConfig);
+            if (currentWeaponConfig.HasProjectile())
             {
-                currentWeapon.value.LaunchProjectile(target, rightHandTransform, leftHandTransform, attackPayload);
+                currentWeaponConfig.LaunchProjectile(target, rightHandTransform, leftHandTransform, attackPayload);
             }
             else
             {
                 target.HandleAttack(attackPayload);
+            }
+
+            if (currentWeapon.value != null)
+            {
+                currentWeapon.value.OnAttack();
             }
 
             CheckFriendlyFire();
@@ -156,37 +162,37 @@ namespace RPG.Combat
 
         public IEnumerable<int> GetAdditiveModifiers(Stat stat)
         {
-            if (stat == Stat.Strength && !currentWeapon.value.HasProjectile())
+            if (stat == Stat.Strength && !currentWeaponConfig.HasProjectile())
             {
-                yield return currentWeapon.value.GetBonusDamagePoints();
+                yield return currentWeaponConfig.GetBonusDamagePoints();
             }
-            else if (stat == Stat.Range && currentWeapon.value.HasProjectile())
+            else if (stat == Stat.Range && currentWeaponConfig.HasProjectile())
             {
-                yield return currentWeapon.value.GetBonusDamagePoints();
+                yield return currentWeaponConfig.GetBonusDamagePoints();
             }
         }
 
         public IEnumerable<int> GetPercentageModifiers(Stat stat)
         {
-            if (stat == Stat.Strength && !currentWeapon.value.HasProjectile())
+            if (stat == Stat.Strength && !currentWeaponConfig.HasProjectile())
             {
-                yield return currentWeapon.value.GetBonusDamagePercentage();
+                yield return currentWeaponConfig.GetBonusDamagePercentage();
             }
-            else if (stat == Stat.Range && currentWeapon.value.HasProjectile())
+            else if (stat == Stat.Range && currentWeaponConfig.HasProjectile())
             {
-                yield return currentWeapon.value.GetBonusDamagePercentage();
+                yield return currentWeaponConfig.GetBonusDamagePercentage();
             }
         }
 
         public object CaptureState()
         {
-            return currentWeapon.value.name;        
+            return currentWeaponConfig.name;        
         }
 
         public void RestoreState(object state)
         {
             string weaponName = (string)state;
-            Weapon weapon = UnityEngine.Resources.Load<Weapon>(weaponName);
+            WeaponConfig weapon = UnityEngine.Resources.Load<WeaponConfig>(weaponName);
             EquipWeapon(weapon);
         }
     }

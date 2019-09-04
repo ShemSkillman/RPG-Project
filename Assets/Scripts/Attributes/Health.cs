@@ -17,7 +17,7 @@ namespace RPG.Attributes
         
         [SerializeField] float sinkSpeed = 1f;
         
-        public UnityEvent onHealthChange;
+        public UnityEvent onHealthChange, onDie;
 
         Animator animator;
         BaseStats baseStats;
@@ -71,6 +71,7 @@ namespace RPG.Attributes
 
             if (healthPoints.value < 1)
             {
+                onDie.Invoke();
                 GrantExperience(instigator);
                 Die();
             }
