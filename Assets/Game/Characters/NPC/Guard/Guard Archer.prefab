@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 1729151708368175175, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: m_Name
-      value: Archer
+      value: Guard Archer
       objectReference: {fileID: 0}
     - target: {fileID: 4662546753900850150, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
@@ -67,10 +67,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5218127621977729630, guid: 76216e1ed72164444bff33f8f97fbf12,
+    - target: {fileID: 3659272749301113705, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
-      propertyPath: maxSpeed
-      value: 5.66
+      propertyPath: startingClan
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
@@ -88,6 +88,11 @@ PrefabInstance:
       propertyPath: characterClass
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5218127621977729630, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: maxSpeed
+      value: 5.66
+      objectReference: {fileID: 0}
     - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: chaseDistance
@@ -97,7 +102,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 78be5954566d2d848918e51832341fa3, type: 2}
+      objectReference: {fileID: 2100000, guid: bfbe2e8b331e2cc42be1591f949c0e41, type: 2}
     m_RemovedComponents:
     - {fileID: 7212728334827857852, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}
     - {fileID: 3511814788765888186, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}

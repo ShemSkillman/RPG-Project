@@ -49,7 +49,11 @@ namespace RPG.Combat
             CalculateDamage(attackPayload, attackReport);
             health.TakeDamage(attackPayload.instigator, attackPayload.damage);
 
-            if (GetIsDead()) attackReport.result = AttackResult.TargetDown;
+            if (GetIsDead())
+            {
+                attackReport.result = AttackResult.TargetDown;
+                entityManager.RemoveEntity(this);
+            }
             onAttacked(attackReport);
 
             return true;

@@ -15,6 +15,8 @@ namespace RPG.Combat
         [SerializeField] Transform leftHandTransform;
         [SerializeField] WeaponConfig defaultWeapon;
 
+        bool isMovingCloser = false;
+
         CombatTarget target;
         float timeSinceLastAttack = Mathf.Infinity;
         WeaponConfig currentWeaponConfig;
@@ -65,27 +67,50 @@ namespace RPG.Combat
 
             if (target == null || target.GetIsDead()) return;
 
-            bool outOfRange = Vector3.Distance(transform.position, target.transform.position) > currentWeaponConfig.GetWeaponRange();
-            if (outOfRange)
+            bool inRange = Vector3.Distance(transform.position, target.transform.position) <= currentWeaponConfig.GetWeaponRange();
+
+            if (!inRange && !isMovingCloser || !IsComfortableRange() && isMovingCloser) // MOVE TO TARGET
             {
+                isMovingCloser = true;
                 mover.MoveTo(target.transform.position, 1f);
             }
-            else
+            else // STOP AND ATTACK
             {
+                isMovingCloser = false;
                 mover.Cancel();
                 AttackBehaviour();
             }
         }
 
+        private bool IsComfortableRange()
+        {
+            if (currentWeaponConfig.HasProjectile())
+            {
+                return Vector3.Distance(transform.position, target.transform.position) < (currentWeaponConfig.GetWeaponRange() / 2f);
+            }
+            else
+            {
+                return Vector3.Distance(transform.position, target.transform.position) < currentWeaponConfig.GetWeaponRange();
+            }            
+        }
+
         private void AttackBehaviour()
         {
-            transform.LookAt(target.transform);
+            LookAtTarget();
             if (timeSinceLastAttack >= currentWeaponConfig.GetTimeBetweenAttacks())
             {
                 // This will trigger the Hit() event
                 timeSinceLastAttack = 0f;
                 TriggerAttackAnimation();
             }
+        }
+
+        private void LookAtTarget()
+        {
+            var lookPos = target.transform.position - transform.position;
+            lookPos.y = 0;
+            var rotation = Quaternion.LookRotation(lookPos);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 10f);
         }
 
         private void TriggerAttackAnimation()
