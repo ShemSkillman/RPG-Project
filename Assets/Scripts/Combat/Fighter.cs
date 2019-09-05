@@ -113,17 +113,6 @@ namespace RPG.Combat
             {
                 currentWeapon.value.OnAttack();
             }
-
-            CheckFriendlyFire();
-        }
-
-        private void CheckFriendlyFire()
-        {
-            CombatTarget myCombatTarget = GetComponent<CombatTarget>();
-            if (myCombatTarget.GetAlignment() == target.GetAlignment())
-            {
-                myCombatTarget.ChangeAlignment(Alignment.Rogue);
-            }
         }
 
 

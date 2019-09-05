@@ -2,6 +2,7 @@
 using RPG.Stats;
 using UnityEngine;
 using RPG.Control.Cursor;
+using System;
 
 namespace RPG.Combat
 {
@@ -14,7 +15,8 @@ namespace RPG.Combat
 
         const int criticalDamageMultiplier = 2;
 
-        [SerializeField] Alignment alignment = Alignment.Lawful;
+        [SerializeField] Clan startingClan = Clan.None;
+        Clan currentClan = Clan.None;
 
         public delegate void OnAttacked(AttackReport attackReport);
         public event OnAttacked onAttacked;
@@ -28,12 +30,14 @@ namespace RPG.Combat
 
         private void Start()
         {
-            entityManager.RegisterEntity(this, alignment);
+            entityManager.RegisterEntity(this, startingClan);
         }
 
         public bool HandleAttack(AttackPayload attackPayload)
         {
             if (GetIsDead()) return false;
+
+            CheckFriendlyFire(attackPayload);
             AttackReport attackReport = new AttackReport(AttackResult.Miss);
             
             if (!IsHit(attackPayload))
@@ -51,6 +55,12 @@ namespace RPG.Combat
             return true;
         }
 
+        private void CheckFriendlyFire(AttackPayload attackPayload)
+        {
+            CombatTarget aggressor = attackPayload.instigator.GetComponent<CombatTarget>();
+            entityManager.EvaluateAttack(aggressor, this);
+        }
+
         private bool IsHit(AttackPayload attackPayload)
         {
             if (attackPayload.attackType == Stat.Range) return true;
@@ -58,7 +68,7 @@ namespace RPG.Combat
             int evasion = baseStats.GetStat(Stat.Swiftness) * 2;
             float hitChance = attackPayload.hitPrecision / (float)(attackPayload.hitPrecision + evasion);
 
-            if (Random.value <= hitChance) return true;
+            if (UnityEngine.Random.value <= hitChance) return true;
             else return false;
         }
 
@@ -82,7 +92,7 @@ namespace RPG.Combat
         {
             float critChance = (attackPayload.critStrike / (float)(attackPayload.critStrike + GetCritProtection(attackPayload.attackType)));
 
-            if (Random.value <= critChance) return true;
+            if (UnityEngine.Random.value <= critChance) return true;
             else return false;
         }
 
@@ -91,15 +101,9 @@ namespace RPG.Combat
             return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Defense);
         }
 
-        public void ChangeAlignment(Alignment newAlignment)
-        {
-            entityManager.ChangeAlignment(this, alignment, newAlignment);
-            alignment = newAlignment;
-        }
-
         public bool HandleRaycast(GameObject player)
         {
-            if (gameObject.tag == "Player") return false;
+            if (gameObject.tag == "Player" || currentClan == Clan.PlayerParty) return false;
 
             Fighter playerFighter = player.GetComponent<Fighter>();
             if (!playerFighter.CanAttack(this)) return false;
@@ -122,9 +126,19 @@ namespace RPG.Combat
             return health.GetIsDead();
         }
 
-        public Alignment GetAlignment()
+        public Clan GetClan()
         {
-            return alignment;
+            return currentClan;
+        }
+
+        public void SetClan(Clan newClan)
+        {
+            currentClan = newClan;
+        }
+
+        public void ChangeClan(Clan newClan)
+        {
+            entityManager.ChangeClan(this, newClan);
         }
     }    
 }

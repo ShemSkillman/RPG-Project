@@ -64,7 +64,7 @@ namespace RPG.Control
 
         private void SetEnemies()
         {
-            enemies = entityManager.GetEnemies(myCombatTarget, myCombatTarget.GetAlignment());
+            enemies = entityManager.GetEnemies(myCombatTarget);
         }
 
         private Vector3 GetInitialGuardPosition()

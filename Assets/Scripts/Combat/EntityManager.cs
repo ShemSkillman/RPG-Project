@@ -1,66 +1,75 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using RPG.Stats;
 using System;
 
 namespace RPG.Combat
 {
     public class EntityManager : MonoBehaviour
     {
-        Dictionary<Alignment, List<CombatTarget>> entities;
+        [SerializeField] CustomClan[] customClans;
+        
+        Dictionary<Clan, CustomClan> clans = new Dictionary<Clan, CustomClan>();
 
         public event Action onUpdateEntities;
 
         private void Awake()
         {
-            entities = new Dictionary<Alignment, List<CombatTarget>>();
+            foreach(CustomClan clan in customClans)
+            {
+                clans[clan.name] = clan;
+            }
         }
 
-        public void RegisterEntity(CombatTarget entity, Alignment alignment)
+        public void RegisterEntity(CombatTarget entity, Clan clan)
         {
-
-            if (!entities.ContainsKey(alignment))
-            {
-                entities[alignment] = new List<CombatTarget>();
-            }
-
-            if (entities[alignment].Contains(entity)) return;
-
-            entities[alignment].Add(entity);
+            CustomClan entityClan = clans[clan];
+            entityClan.AddMember(entity);
+            entity.SetClan(clan);
 
             onUpdateEntities();
         }
 
-        public void RemoveEntity(CombatTarget entity, Alignment alignment)
+        public void RemoveEntity(CombatTarget entity)
         {
-            if (entities[alignment].Contains(entity))
-            {
-                entities[alignment].Remove(entity);
-                onUpdateEntities();
-            }
+            CustomClan entityClan = clans[entity.GetClan()];
+            entityClan.RemoveMember(entity);
+            entity.SetClan(Clan.None);
         }
 
-        public void ChangeAlignment(CombatTarget entity, Alignment oldAlignment, Alignment newAlignment)
+        public void ChangeClan(CombatTarget entity, Clan newClan)
         {
-            entities[oldAlignment].Remove(entity);
-            RegisterEntity(entity, newAlignment);
+            RemoveEntity(entity);
+            RegisterEntity(entity, newClan);
         }
 
-        public List<CombatTarget> GetEnemies(CombatTarget entity, Alignment entityAlignment)
+        public List<CombatTarget> GetEnemies(CombatTarget entity)
         {
             List<CombatTarget> allEnemies = new List<CombatTarget>();
-            foreach(Alignment alignment in entities.Keys)
-            {
-                if (alignment == entityAlignment && 
-                    entityAlignment != Alignment.Rogue) continue;
 
-                allEnemies.AddRange(entities[alignment]);
+            CustomClan entityClan = clans[entity.GetClan()];
+
+            foreach(CustomClan clan in clans.Values)
+            {
+                if (clan.alignment != entityClan.alignment ||
+                   (entityClan != clan && clan.alignment == Alignment.Rogue))
+                {
+                    allEnemies.AddRange(clan.GetMembers());
+                }
             }
 
-            if (allEnemies.Contains(entity))
-            allEnemies.Remove(entity);
-
             return allEnemies;
+        }  
+
+        public void EvaluateAttack(CombatTarget aggressor, CombatTarget reciever)
+        {
+            CustomClan aggressorClan = clans[aggressor.GetClan()];
+            CustomClan recieverClan = clans[reciever.GetClan()];
+
+            if (aggressorClan.alignment != recieverClan.alignment || 
+                aggressorClan.alignment == Alignment.Rogue) return;
+
+            aggressorClan.alignment = Alignment.Rogue;
+            onUpdateEntities();
         }
     }
 
@@ -69,6 +78,41 @@ namespace RPG.Combat
         Lawful,
         Bandit,
         Rogue
+    }
+
+    public enum Clan
+    {
+        TheCircleOfOssus,
+        KnightsOfEverlance,
+        PlayerParty,
+        None
+    }
+
+    [System.Serializable]
+    public class CustomClan
+    {
+        public Clan name;
+        public Alignment alignment;
+        List<CombatTarget> clanMembers = new List<CombatTarget>();
+
+        public void AddMember(CombatTarget member)
+        {
+            if (clanMembers.Contains(member)) return;
+            clanMembers.Add(member);
+        }
+
+        public void RemoveMember(CombatTarget member)
+        {
+            if (clanMembers.Contains(member))
+            {
+                clanMembers.Remove(member);
+            }
+        }
+
+        public List<CombatTarget> GetMembers()
+        {
+            return clanMembers;
+        }
     }
 }
 
