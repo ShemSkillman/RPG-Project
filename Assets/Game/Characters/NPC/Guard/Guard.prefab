@@ -67,10 +67,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2772544959275486886, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: characterClass
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3659272749301113705, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: startingClan
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
+        type: 3}
+      propertyPath: chaseDistance
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
@@ -83,20 +93,10 @@ PrefabInstance:
       propertyPath: defaultWeaponName
       value: Enemy Bow
       objectReference: {fileID: 0}
-    - target: {fileID: 2772544959275486886, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: characterClass
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 5218127621977729630, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: maxSpeed
       value: 5.66
-      objectReference: {fileID: 0}
-    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: chaseDistance
-      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3725678372733889889, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}

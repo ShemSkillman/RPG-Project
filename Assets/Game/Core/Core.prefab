@@ -73,20 +73,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!136 &1881016491
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6041762032560347514}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 1.9
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.95, z: 0}
 --- !u!1 &7539043534564556925
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +136,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd15df8272746de489728d5514129347, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customClans:
+  - name: 0
+    alignment: 1
+  - name: 1
+    alignment: 0
+  - name: 2
+    alignment: 0
+  - name: 3
+    alignment: 2
 --- !u!1 &7539043535745821636
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,17 +229,17 @@ PrefabInstance:
     - target: {fileID: 4469301724043331176, guid: 2b48f9e1b8d7a584e942ddbc7d548458,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -34.756756
+      value: -21.296755
       objectReference: {fileID: 0}
     - target: {fileID: 4469301724043331176, guid: 2b48f9e1b8d7a584e942ddbc7d548458,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.408498
+      value: 9.408497
       objectReference: {fileID: 0}
     - target: {fileID: 4469301724043331176, guid: 2b48f9e1b8d7a584e942ddbc7d548458,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 46.345512
+      value: 41.055515
       objectReference: {fileID: 0}
     - target: {fileID: 4469301724043331176, guid: 2b48f9e1b8d7a584e942ddbc7d548458,
         type: 3}
@@ -330,17 +325,17 @@ PrefabInstance:
     - target: {fileID: 3678451027728196803, guid: 9ef381d5da97e974da27e80b90e6e944,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -34.756756
+      value: -21.296755
       objectReference: {fileID: 0}
     - target: {fileID: 3678451027728196803, guid: 9ef381d5da97e974da27e80b90e6e944,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.408498
+      value: 9.408497
       objectReference: {fileID: 0}
     - target: {fileID: 3678451027728196803, guid: 9ef381d5da97e974da27e80b90e6e944,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 46.345512
+      value: 41.055515
       objectReference: {fileID: 0}
     - target: {fileID: 3678451027728196803, guid: 9ef381d5da97e974da27e80b90e6e944,
         type: 3}
@@ -410,7 +405,7 @@ PrefabInstance:
     - target: {fileID: 7796620910107649333, guid: 676e58738972a224485b02b75145db50,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -29.79
+      value: -16.33
       objectReference: {fileID: 0}
     - target: {fileID: 7796620910107649333, guid: 676e58738972a224485b02b75145db50,
         type: 3}
@@ -420,7 +415,7 @@ PrefabInstance:
     - target: {fileID: 7796620910107649333, guid: 676e58738972a224485b02b75145db50,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 29.41
+      value: 24.12
       objectReference: {fileID: 0}
     - target: {fileID: 7796620910107649333, guid: 676e58738972a224485b02b75145db50,
         type: 3}
@@ -503,14 +498,13 @@ PrefabInstance:
       propertyPath: cursorMappings.Array.data[5].hotspot.y
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2184177463056952762, guid: 676e58738972a224485b02b75145db50,
+        type: 3}
+      propertyPath: startingClan
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 676e58738972a224485b02b75145db50, type: 3}
---- !u!1 &6041762032560347514 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4285375878813961876, guid: 676e58738972a224485b02b75145db50,
-    type: 3}
-  m_PrefabInstance: {fileID: 7539043535665256430}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &329670205482545883 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7796620910107649333, guid: 676e58738972a224485b02b75145db50,

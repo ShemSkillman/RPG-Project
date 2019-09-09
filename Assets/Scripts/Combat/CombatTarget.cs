@@ -2,7 +2,6 @@
 using RPG.Stats;
 using UnityEngine;
 using RPG.Control.Cursor;
-using System;
 
 namespace RPG.Combat
 {

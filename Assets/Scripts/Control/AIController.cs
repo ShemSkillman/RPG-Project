@@ -11,6 +11,7 @@ namespace RPG.Control
 {
     public class AIController : MonoBehaviour
     {
+        [SerializeField] GroupLeader leader;
         [SerializeField] float chaseDistance = 10f;
         [SerializeField] float suspicionTime = 5f;
         [SerializeField] PatrolPath patrolPath;
@@ -33,6 +34,7 @@ namespace RPG.Control
         float timeSinceLastSawEnemy = Mathf.Infinity;
         int currentWaypointIndex = 0;
         float timeSinceWaypointArrival = Mathf.Infinity;
+        bool isIdle = true;
 
         void Awake()
         {
@@ -58,8 +60,16 @@ namespace RPG.Control
 
         private void Start()
         {
-            guardPosition.ForceInit();
-            SetEnemies();
+            if (leader != null)
+            {
+                leader.AddFollower(this);
+            }
+            else
+            {
+                guardPosition.ForceInit();
+            }
+
+            SetEnemies();            
         }
 
         private void SetEnemies()
@@ -74,7 +84,7 @@ namespace RPG.Control
 
         private void Update()
         {
-            if (health.GetIsDead()) return;
+            if (health.GetIsDead() || !isIdle) return;
 
             currentTarget = CheckProximity();
             if (currentTarget != null &&
@@ -167,6 +177,11 @@ namespace RPG.Control
             }
 
             return closestEnemy;
+        }
+
+        public void SetIsIdle(bool isIdle)
+        {
+            this.isIdle = isIdle;
         }
 
         // Called by Unity

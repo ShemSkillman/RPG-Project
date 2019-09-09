@@ -4,6 +4,7 @@ using RPG.Core;
 using RPG.Saving;
 using RPG.Attributes;
 using RPG.Stats;
+using System.Collections;
 
 namespace RPG.Movement
 {
@@ -23,8 +24,7 @@ namespace RPG.Movement
 
         private void Start()
         {
-            BaseStats baseStats = GetComponent<BaseStats>();
-            maxSpeed = maxSpeed * Mathf.Clamp01(baseStats.GetStat(Stat.Swiftness) / (float)baseStats.GetStat(Stat.Defense));
+            BaseStats baseStats = GetComponent<BaseStats>();        
         }
 
         void Update()
@@ -55,9 +55,22 @@ namespace RPG.Movement
             navMeshAgent.isStopped = false;
         }
 
+        public Vector3 GetNextPathCorner()
+        {
+            Vector3[] corners = navMeshAgent.path.corners;
+            if (corners.Length < 2) return transform.position;
+
+            return corners[1];
+        }       
+
         public void Cancel()
         {
             navMeshAgent.isStopped = true;
+        }
+
+        public bool GetIsMoving()
+        {
+            return !navMeshAgent.isStopped;
         }
 
         public object CaptureState()

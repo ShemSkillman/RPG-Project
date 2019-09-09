@@ -65,7 +65,7 @@ namespace RPG.Combat
         {
             timeSinceLastAttack += Time.deltaTime;
 
-            if (target == null || target.GetIsDead()) return;
+            if (!CanAttack(target)) return;
 
             bool inRange = Vector3.Distance(transform.position, target.transform.position) <= currentWeaponConfig.GetWeaponRange();
 
@@ -84,14 +84,7 @@ namespace RPG.Combat
 
         private bool IsComfortableRange()
         {
-            if (currentWeaponConfig.HasProjectile())
-            {
-                return Vector3.Distance(transform.position, target.transform.position) < (currentWeaponConfig.GetWeaponRange() / 2f);
-            }
-            else
-            {
-                return Vector3.Distance(transform.position, target.transform.position) < currentWeaponConfig.GetWeaponRange();
-            }            
+            return Vector3.Distance(transform.position, target.transform.position) < (currentWeaponConfig.GetWeaponRange() * 0.75f);  
         }
 
         private void AttackBehaviour()
@@ -149,8 +142,8 @@ namespace RPG.Combat
 
         public void Attack(CombatTarget combatTarget)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
             target = combatTarget;
+            GetComponent<ActionScheduler>().StartAction(this);
         }
 
         public bool CanAttack(CombatTarget combatTarget)
