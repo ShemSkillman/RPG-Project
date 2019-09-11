@@ -33,7 +33,6 @@ namespace RPG.Combat
         {
             CustomClan entityClan = clans[entity.GetClan()];
             entityClan.RemoveMember(entity);
-            entity.SetClan(Clan.None);
         }
 
         public void ChangeClan(CombatTarget entity, Clan newClan)
@@ -59,6 +58,26 @@ namespace RPG.Combat
 
             return allEnemies;
         }  
+
+        public List<CombatTarget> GetAllies(CombatTarget entity)
+        {
+            List<CombatTarget> allAllies = new List<CombatTarget>();
+
+            CustomClan entityClan = clans[entity.GetClan()];
+
+            foreach (CustomClan clan in clans.Values)
+            {
+                if (clan.alignment == entityClan.alignment && clan.alignment != Alignment.Rogue ||
+                    clan == entityClan)
+                {
+                    allAllies.AddRange(clan.GetMembers());
+                }
+            }
+
+            if (allAllies.Contains(entity)) allAllies.Remove(entity);
+
+            return allAllies;
+        }
 
         public void EvaluateAttack(CombatTarget aggressor, CombatTarget reciever)
         {

@@ -91,7 +91,6 @@ namespace RPG.Attributes
         {
             isDead = true;
             animator.SetTrigger("death");
-            GetComponent<ActionScheduler>().CancelCurrentAction();
             StartCoroutine(BodySink());
         }
 

@@ -570,7 +570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b289b85ed69b3e48b64601b8cf90a1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 30
+  speed: 25
   targetOffsetPadding: 0.8
   isHoming: 0
   isSmartAim: 1

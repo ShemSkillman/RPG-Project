@@ -6,14 +6,15 @@ namespace RPG.Core
     public class ActionScheduler : MonoBehaviour
     {
         IAction currentAction;
-        int currentActionPriority = 0;
-        ActionType currentActionType = ActionType.None;
+        [SerializeField] int currentActionPriority = 0;
+        [SerializeField] ActionType currentActionType = ActionType.None;
 
-        public Action OnFinishAction, onStartAction;
+        public Action onFinishAction, onStartAction;
+        bool isFrozen = false;
 
         public bool StartAction(IAction action, int actionPriority, ActionType actionType)
         {
-            if (action != null && actionPriority < currentActionPriority) return false;
+            if (isFrozen || (action != null && actionPriority < currentActionPriority)) return false;
 
             if (currentAction != null)
             {
@@ -31,12 +32,18 @@ namespace RPG.Core
         {
             StartAction(null, 0, ActionType.None);
 
-            OnFinishAction?.Invoke();
+            onFinishAction?.Invoke();
         }
 
         public ActionType GetCurrentActionType()
         {
             return currentActionType;
+        }
+
+        public void Freeze()
+        {
+            CancelCurrentAction();
+            isFrozen = true;
         }
     }
 

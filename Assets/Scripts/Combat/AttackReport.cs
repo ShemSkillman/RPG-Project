@@ -1,7 +1,10 @@
-﻿namespace RPG.Combat
+﻿using UnityEngine;
+
+namespace RPG.Combat
 {
     public class AttackReport
     {
+        public GameObject instigator;
         public int damageDealt = 0;
         public AttackResult result;
 
@@ -10,9 +13,10 @@
             result = AttackResult.None;
         }
 
-        public AttackReport(AttackResult result)
+        public AttackReport(AttackResult result, GameObject instigator)
         {
             this.result = result;
+            this.instigator = instigator;
         }
     }
 

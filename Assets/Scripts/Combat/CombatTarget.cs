@@ -37,7 +37,7 @@ namespace RPG.Combat
             if (GetIsDead()) return false;
 
             CheckFriendlyFire(attackPayload);
-            AttackReport attackReport = new AttackReport(AttackResult.Miss);
+            AttackReport attackReport = new AttackReport(AttackResult.Miss, attackPayload.instigator);
             
             if (!IsHit(attackPayload))
             {
