@@ -12,29 +12,23 @@ namespace RPG.Control
     public class AIController : MonoBehaviour
     {
         [SerializeField] GroupLeader leader;
-        [SerializeField] float chaseDistance = 10f;
-        [SerializeField] float suspicionTime = 5f;
-        [SerializeField] PatrolPath patrolPath;
-        [SerializeField] float waypointTolerance = 1f;
-        [SerializeField] float waypointDwellTime = 4f;
-        [Range(0, 1)]
-        [SerializeField] float patrolSpeedFraction = 0.2f;
+        [SerializeField] protected float chaseDistance = 10f;
+        [SerializeField] protected float suspicionTime = 5f;
+        protected const int priority = 1;
 
         // Cache references
-        Mover mover;
-        Fighter fighter;
-        Health health;
-        EntityManager entityManager;
-        List<CombatTarget> enemies = new List<CombatTarget>();
-        ActionScheduler actionScheduler;
-        CombatTarget myCombatTarget;
-        CombatTarget currentTarget;
+        protected Mover mover;
+        protected Fighter fighter;
+        protected Health health;
+        protected EntityManager entityManager;
+        protected ActionScheduler actionScheduler;
+        protected CombatTarget myCombatTarget;
 
-        LazyValue<Vector3> guardPosition;
-        float timeSinceLastSawEnemy = Mathf.Infinity;
-        int currentWaypointIndex = 0;
-        float timeSinceWaypointArrival = Mathf.Infinity;
-        bool isIdle = true;
+        protected CombatTarget currentTarget;
+        protected List<CombatTarget> enemies = new List<CombatTarget>();
+        protected float timeSinceLastSawEnemy = Mathf.Infinity;
+        protected LazyValue<Vector3> guardPosition;
+        protected bool isSchedulerFree = true;
 
         void Awake()
         {
@@ -47,114 +41,99 @@ namespace RPG.Control
             guardPosition = new LazyValue<Vector3>(GetInitialGuardPosition);
         }
 
-        private void OnEnable()
+        protected void OnEnable()
         {
             entityManager.onUpdateEntities += SetEnemies;
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             entityManager.onUpdateEntities -= SetEnemies;
         }
 
-
-        private void Start()
+        protected void Start()
         {
-            if (leader != null)
-            {
-                leader.AddFollower(this);
-            }
-            else
-            {
-                guardPosition.ForceInit();
-            }
+            if (leader != null) leader.AddFollower(this);
 
+            guardPosition.ForceInit();
             SetEnemies();            
         }
 
-        private void SetEnemies()
+        protected void SetEnemies()
         {
             enemies = entityManager.GetEnemies(myCombatTarget);
         }
 
-        private Vector3 GetInitialGuardPosition()
+        protected Vector3 GetInitialGuardPosition()
         {
             return transform.position;
         }
 
-        private void Update()
+        public void SetGuardPosition(Vector3 newPos)
         {
-            if (health.GetIsDead() || !isIdle) return;
+            guardPosition.value = newPos;
+        }
+
+        protected void Update()
+        {
+            if (health.GetIsDead() || !isSchedulerFree) return;
 
             currentTarget = CheckProximity();
-            if (currentTarget != null &&
-                fighter.CanAttack(currentTarget))
+
+            if (currentTarget != null)
             {
-                AttackBehaviour(currentTarget.GetComponent<CombatTarget>());
+                timeSinceLastSawEnemy = 0f;
+                AttackBehaviour();
             }
             else if (timeSinceLastSawEnemy <= suspicionTime)
             {
+                timeSinceLastSawEnemy += Time.deltaTime;
                 SuspiciousBehaviour();
             }
             else
             {
-                PatrolBehaviour();
+                MovementBehaviour();
             }
         }
 
-        private void PatrolBehaviour()
+        protected virtual void MovementBehaviour()
         {
-            Vector3 nextPosition = guardPosition.value;
+            if (actionScheduler.GetCurrentActionType() == ActionType.Move && mover.GetDestination() == guardPosition.value) return;
 
-            if (patrolPath != null)
+            CheckSchedulerFree(mover.StartMoveAction(guardPosition.value, 1f, priority));
+        }
+
+        protected void SuspiciousBehaviour()
+        {
+            if (actionScheduler.GetCurrentActionType() == ActionType.Stop) return;
+
+            CheckSchedulerFree(mover.StartStopAction(priority));
+        }
+
+        protected void AttackBehaviour()
+        {
+            if (actionScheduler.GetCurrentActionType() == ActionType.Attack && currentTarget == fighter.GetTarget()) return;
+
+            CheckSchedulerFree(fighter.StartAttackAction(currentTarget, priority));
+        }
+
+        protected void CheckSchedulerFree(bool isStartActionSuccessful)
+        {
+            isSchedulerFree = isStartActionSuccessful;
+
+            if (!isStartActionSuccessful)
             {
-                if (AtWaypoint())
-                {
-                    timeSinceWaypointArrival += Time.deltaTime;
-                    if (timeSinceWaypointArrival > waypointDwellTime)
-                    {
-                        CycleWaypoint();
-                    }
-                }
-                else
-                {
-                    timeSinceWaypointArrival = 0f;
-                }
-                nextPosition = GetCurrentWaypoint();
+                actionScheduler.OnFinishAction += SchedulerFree;
             }
-
-            mover.StartMoveAction(nextPosition, patrolSpeedFraction);
         }
 
-        private bool AtWaypoint()
+        protected void SchedulerFree()
         {
-            float distanceToWaypoint = Vector3.Distance(transform.position, GetCurrentWaypoint());
-            return distanceToWaypoint <= waypointTolerance;
+            isSchedulerFree = true;
+            actionScheduler.OnFinishAction -= SchedulerFree;
         }
 
-        private Vector3 GetCurrentWaypoint()
-        {
-            return patrolPath.GetWaypoint(currentWaypointIndex);
-        }
-
-        private void CycleWaypoint()
-        {
-            currentWaypointIndex = patrolPath.GetNextWaypointIndex(currentWaypointIndex);
-        }
-
-        private void SuspiciousBehaviour()
-        {
-            timeSinceLastSawEnemy += Time.deltaTime;
-            actionScheduler.CancelCurrentAction();
-        }
-
-        private void AttackBehaviour(CombatTarget target)
-        {
-            timeSinceLastSawEnemy = 0f;
-            fighter.Attack(target);
-        }
-
-        private CombatTarget CheckProximity()
+        protected CombatTarget CheckProximity()
         {
             if (fighter.CanAttack(currentTarget)) return currentTarget;
 
@@ -179,13 +158,8 @@ namespace RPG.Control
             return closestEnemy;
         }
 
-        public void SetIsIdle(bool isIdle)
-        {
-            this.isIdle = isIdle;
-        }
-
         // Called by Unity
-        private void OnDrawGizmosSelected()
+        protected void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, chaseDistance);

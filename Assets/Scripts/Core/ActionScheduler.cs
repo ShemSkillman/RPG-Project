@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace RPG.Core
 {
     public class ActionScheduler : MonoBehaviour
     {
-        private IAction currentAction;
+        IAction currentAction;
+        int currentActionPriority = 0;
+        ActionType currentActionType = ActionType.None;
 
-        public void StartAction(IAction action)
+        public Action OnFinishAction, onStartAction;
+
+        public bool StartAction(IAction action, int actionPriority, ActionType actionType)
         {
-
-            if (currentAction == action) return;
+            if (action != null && actionPriority < currentActionPriority) return false;
 
             if (currentAction != null)
             {
@@ -17,11 +21,30 @@ namespace RPG.Core
             }
 
             currentAction = action;
+            currentActionPriority = actionPriority;
+            currentActionType = actionType;
+
+            return true;
         }
 
         public void CancelCurrentAction()
         {
-            StartAction(null);
+            StartAction(null, 0, ActionType.None);
+
+            OnFinishAction?.Invoke();
         }
+
+        public ActionType GetCurrentActionType()
+        {
+            return currentActionType;
+        }
+    }
+
+    public enum ActionType
+    {
+        Attack,
+        Move,
+        Stop,
+        None
     }
 }

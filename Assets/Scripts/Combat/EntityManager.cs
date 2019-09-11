@@ -26,7 +26,7 @@ namespace RPG.Combat
             entityClan.AddMember(entity);
             entity.SetClan(clan);
 
-            onUpdateEntities();
+            onUpdateEntities?.Invoke();
         }
 
         public void RemoveEntity(CombatTarget entity)

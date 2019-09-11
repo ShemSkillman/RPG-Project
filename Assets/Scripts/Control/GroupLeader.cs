@@ -8,24 +8,41 @@ using System;
 
 namespace RPG.Control
 {
-    [RequireComponent(typeof(GroupMover))]
     public class GroupLeader : MonoBehaviour
     {        
         List<AIController> followers = new List<AIController>();
         Vector3 nextPos;
-        GroupMover groupMover;
         Mover myMover;
         Fighter myFighter;
         ActionScheduler actionScheduler;
+        const int priority = 3;
 
-        public bool isIdle;
+        [Header("Formation Configuration:")]
+        [Range(1, 10)]
+        [SerializeField] int unitCountToRowCountRatio = 1;
+        [SerializeField] float spacing = 2f;
+
+        Vector3[,] posMatrix;
+        int rowCount = 1;
+        int unitsPerRow = 1;
+        int unitCount = -1;
+        bool isMoving;
 
         private void Awake()
         {
-            groupMover = GetComponent<GroupMover>();
             myMover = GetComponent<Mover>();
             myFighter = GetComponent<Fighter>();
             actionScheduler = GetComponent<ActionScheduler>();
+        }
+
+        private void OnEnable()
+        {
+            actionScheduler.onStartAction += GiveOrders;
+        }
+
+        private void OnDisable()
+        {
+            actionScheduler.onStartAction -= GiveOrders;
         }
 
         private void Start()
@@ -35,58 +52,27 @@ namespace RPG.Control
 
         private void Update()
         {
-            if (myFighter.GetTarget() != null)
-            {
-                SetFollowersIdle(false);
-                print("attacking");
-                GroupAttack();
-            }
-            else if (nextPos != myMover.GetNextPathCorner())
-            {
-                SetFollowersIdle(false);
-                print("moving");
-                UpdateFormation();
-            }
-            else
-            {
-                SetFollowersIdle(true);
-                print("doing nothing...");
-            }
+            GetInFormation();
         }
 
-        private void GroupAttack()
-        {
-            foreach (AIController follower in followers)
-            {
-                follower.GetComponent<Fighter>().Attack(myFighter.GetTarget());
-            }     
-        }
-
-        private void UpdateFormation()
+        private void GiveOrders()
         {
             if (followers.Count == 0) return;
-            nextPos = myMover.GetNextPathCorner();
 
-            Vector3[,] posMatrix = groupMover.CalculateFormation(followers.Count, nextPos);
-            int followerIndex = 0;
+            isMoving = false;
 
-            for (int i = 0; i < posMatrix.GetLength(0); i++)
+            if (actionScheduler.GetCurrentActionType() == ActionType.Attack)
             {
-                for (int j = 0; j < posMatrix.GetLength(1); j++, followerIndex++)
+                foreach (AIController follower in followers)
                 {
-                    if (posMatrix[i, j] == null) return;
-
-                    Mover mover = followers[followerIndex].GetComponent<Mover>();
-                    mover.MoveTo(posMatrix[i, j], 1f);
+                    Fighter fighter = follower.GetComponent<Fighter>();
+                    fighter.StartAttackAction(fighter.GetTarget(), priority);
                 }
             }
-        }
-
-        private void SetFollowersIdle(bool isIdle)
-        {
-            foreach(AIController follower in followers)
+            else if (actionScheduler.GetCurrentActionType() == ActionType.Move)
             {
-                follower.SetIsIdle(isIdle);
+                print("moving");
+                isMoving = true;
             }
         }
 
@@ -98,6 +84,91 @@ namespace RPG.Control
         public void RemoveFollower(AIController follower)
         {
             followers.Remove(follower);
+        }
+               
+        private void GetInFormation()
+        {
+            if (!isMoving || followers.Count == 0 || nextPos == myMover.GetNextPathCorner()) return;
+
+            nextPos = myMover.GetNextPathCorner();
+            posMatrix = CalculateFormation(followers.Count, nextPos);
+
+            for (int i = 0; i < rowCount; i++)
+            {
+                for (int j = 0; j < unitsPerRow; j++)
+                {
+                    if (posMatrix[i, j] == null) return;
+
+                    Mover mover = followers[i * unitsPerRow + j].GetComponent<Mover>();
+                    mover.StartMoveAction(posMatrix[i, j], 1f, priority);
+                    followers[i * unitsPerRow + j].SetGuardPosition(posMatrix[i, j]);
+                }
+            }
+        }
+
+        public Vector3[,] CalculateFormation(int unitsToPosition, Vector3 destination)
+        {
+            Vector3[,] posMatrix = GetFormationDimensions(unitsToPosition);
+
+            Vector3 currentPos;
+
+            for (int i = 0; i < rowCount; i++)
+            {
+                Vector3 rowOffset = destination + -transform.forward * ((i + 1) * spacing);
+                Vector3 unitOffset = -transform.right * (spacing * ((Mathf.Min(unitsToPosition, unitsPerRow) - 1) / 2f));
+
+                currentPos = rowOffset;
+                currentPos += unitOffset;
+
+                for (int j = 0; j < unitsPerRow; j++, unitsToPosition--)
+                {
+                    if (unitsToPosition == 0) return posMatrix;
+
+                    posMatrix[i, j] = currentPos;
+
+                    currentPos += transform.right * spacing;
+                }
+            }
+
+            return posMatrix;
+        }
+
+        private Vector3[,] GetFormationDimensions(int unitCount)
+        {
+            if (this.unitCount == unitCount)
+            {
+                return new Vector3[rowCount, unitsPerRow];
+            }
+
+            this.unitCount = unitCount;
+            unitsPerRow = rowCount = 0;
+            int unitCapacity = 0;
+
+            while (unitCount > unitCapacity)
+            {
+                rowCount++;
+                unitsPerRow = unitCountToRowCountRatio * rowCount;
+                unitCapacity = rowCount * unitsPerRow;
+            }
+
+            Vector3[,] formation = new Vector3[rowCount, unitsPerRow];
+            return formation;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (posMatrix == null) return;
+
+            Gizmos.color = Color.red;
+            for (int i = 0; i < rowCount; i++)
+            {
+                for (int j = 0; j < unitsPerRow; j++)
+                {
+                    if (posMatrix[i, j] == null) return;
+
+                    Gizmos.DrawSphere(posMatrix[i, j], 0.5f);
+                }
+            }
         }
     }
 }

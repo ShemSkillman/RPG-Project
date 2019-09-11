@@ -18,6 +18,7 @@ namespace RPG.Control
 
         [SerializeField] float navMeshProjectionDistance = 1f;
         [SerializeField] float maxPathLength = 40f;
+        const int priority = 2;
         
         [System.Serializable]
         struct CursorMapping
@@ -101,7 +102,7 @@ namespace RPG.Control
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    mover.StartMoveAction(target, 1f);
+                    mover.StartMoveAction(target, 1f, priority);
                 }
                 SetCursor(CursorType.Movement);
                 return true;

@@ -13,24 +13,29 @@ namespace RPG.Movement
         private NavMeshAgent navMeshAgent;
         private Animator animator;
         private Health health;
+        ActionScheduler actionScheduler;
+
         [SerializeField] float maxSpeed = 5.66f;
+        [SerializeField] float tolerance = 1f;
+        bool isActive;
 
         private void Awake()
         {
             navMeshAgent = GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
             health = GetComponent<Health>();
-        }
-
-        private void Start()
-        {
-            BaseStats baseStats = GetComponent<BaseStats>();        
+            actionScheduler = GetComponent<ActionScheduler>();
         }
 
         void Update()
         {
             navMeshAgent.enabled = !health.GetIsDead();
             UpdateAnimator();
+
+            if (isActive && AtDestination())
+            {
+                MovementComplete();
+            }
         }
 
         private void UpdateAnimator()
@@ -42,10 +47,25 @@ namespace RPG.Movement
             GetComponent<Animator>().SetFloat("forwardSpeed", speed);
         }
 
-        public void StartMoveAction(Vector3 destination, float speedFraction)
+        public bool StartMoveAction(Vector3 destination, float speedFraction, int actionPriority)
         {
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (!actionScheduler.StartAction(this, actionPriority, ActionType.Move)) return false;
+
             MoveTo(destination, speedFraction);
+            isActive = true;
+
+            actionScheduler.onStartAction?.Invoke();
+            return true;
+        }
+
+        public bool StartStopAction(int actionPriority)
+        {
+            if (!actionScheduler.StartAction(this, actionPriority, ActionType.Stop)) return false;
+
+            navMeshAgent.isStopped = true;
+
+            actionScheduler.onStartAction?.Invoke();
+            return true;
         }
 
         public void MoveTo(Vector3 destination, float speedFraction)
@@ -58,19 +78,35 @@ namespace RPG.Movement
         public Vector3 GetNextPathCorner()
         {
             Vector3[] corners = navMeshAgent.path.corners;
-            if (corners.Length < 2) return transform.position;
+            
+            if (corners.Length > 1) return corners[0];
 
-            return corners[1];
+            return transform.position;
         }       
+
+        private bool AtDestination()
+        {
+            if (navMeshAgent.remainingDistance <= tolerance)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void MovementComplete()
+        {
+            actionScheduler.CancelCurrentAction();
+        }
+
+        public Vector3 GetDestination()
+        {
+            return navMeshAgent.destination;
+        }
 
         public void Cancel()
         {
+            isActive = false;
             navMeshAgent.isStopped = true;
-        }
-
-        public bool GetIsMoving()
-        {
-            return !navMeshAgent.isStopped;
         }
 
         public object CaptureState()

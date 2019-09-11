@@ -113,7 +113,7 @@ namespace RPG.Combat
 
             if (Input.GetMouseButtonDown(0))
             {
-                playerFighter.Attack(this);
+                playerFighter.StartAttackAction(this, 2);
             }
 
             return true;

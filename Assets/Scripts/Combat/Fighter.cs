@@ -5,6 +5,7 @@ using RPG.Saving;
 using RPG.Stats;
 using System.Collections.Generic;
 using GameDevTV.Utils;
+using System;
 
 namespace RPG.Combat
 {
@@ -16,6 +17,7 @@ namespace RPG.Combat
         [SerializeField] WeaponConfig defaultWeapon;
 
         bool isMovingCloser = false;
+        bool isActive = false;
 
         CombatTarget target;
         float timeSinceLastAttack = Mathf.Infinity;
@@ -25,12 +27,14 @@ namespace RPG.Combat
         Mover mover;
         Animator animator;
         BaseStats baseStats;
+        ActionScheduler actionScheduler;
 
         private void Awake()
         {
             mover = GetComponent<Mover>();
             animator = GetComponent<Animator>();
             baseStats = GetComponent<BaseStats>();
+            actionScheduler = GetComponent<ActionScheduler>();
             currentWeaponConfig = defaultWeapon;
             currentWeapon = new LazyValue<Weapon>(GetInitialCurrentWeapon);
         }
@@ -65,7 +69,7 @@ namespace RPG.Combat
         {
             timeSinceLastAttack += Time.deltaTime;
 
-            if (!CanAttack(target)) return;
+            if (!isActive || !CanAttack(target)) return;
 
             bool inRange = Vector3.Distance(transform.position, target.transform.position) <= currentWeaponConfig.GetWeaponRange();
 
@@ -140,10 +144,15 @@ namespace RPG.Combat
             Hit();
         }
 
-        public void Attack(CombatTarget combatTarget)
+        public bool StartAttackAction(CombatTarget combatTarget, int actionPriority)
         {
+            if (!actionScheduler.StartAction(this, actionPriority, ActionType.Attack)) return false;
+
             target = combatTarget;
-            GetComponent<ActionScheduler>().StartAction(this);
+            isActive = true;
+
+            actionScheduler.onStartAction?.Invoke();
+            return true;
         }
 
         public bool CanAttack(CombatTarget combatTarget)
@@ -155,14 +164,21 @@ namespace RPG.Combat
             }
             else
             {
+                if (isActive) AttackComplete();
                 return false;
             }
         }
 
+        private void AttackComplete()
+        {
+            actionScheduler.CancelCurrentAction();
+        }
+
         public void Cancel()
         {
-            mover.Cancel();
+            isActive = false;
             target = null;
+            mover.Cancel();
             animator.ResetTrigger("attack");
             animator.SetTrigger("stopAttack");
         }
