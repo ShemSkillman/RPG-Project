@@ -95,7 +95,7 @@ namespace RPG.Combat
     public enum Alignment
     {
         Lawful,
-        Bandit,
+        Rebel,
         Rogue
     }
 
@@ -104,6 +104,7 @@ namespace RPG.Combat
         TheCircleOfOssus,
         KnightsOfEverlance,
         PlayerParty,
+        Bandit,
         None
     }
 

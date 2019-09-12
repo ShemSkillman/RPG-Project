@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: {fileID: 0}
-  sightRange: 20
+  sightRange: 10
+  chaseDistance: 15
+  reactionTime: 0.2
   suspicionTime: 5
-  allies: []
+  normalSpeedFraction: 0.7
 --- !u!1001 &3725678372747578111
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -196,7 +198,7 @@ PrefabInstance:
     - target: {fileID: 5654971481426887976, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: m_Name
-      value: Bandit Guard
+      value: Default NPC
       objectReference: {fileID: 0}
     - target: {fileID: 1815479897838628489, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
@@ -261,17 +263,12 @@ PrefabInstance:
     - target: {fileID: 9223194171723729865, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: characterClass
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7731847016149263878, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: startingClan
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7676661998087279248, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
-        type: 3}
-      propertyPath: m_Speed
-      value: 2.66
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7021399010919061827, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
@@ -282,6 +279,11 @@ PrefabInstance:
         type: 3}
       propertyPath: maxSpeed
       value: 5.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 1292484319503413041, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
+        type: 3}
+      propertyPath: defaultSpeedFraction
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 4483359272705775668, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
@@ -314,8 +316,7 @@ PrefabInstance:
         type: 3}
       propertyPath: defaultWeapon
       value: 
-      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4483359272705775668, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: leftHandTransform

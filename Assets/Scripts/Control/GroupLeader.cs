@@ -23,7 +23,8 @@ namespace RPG.Control
         [SerializeField] float spacing = 2f;
 
         Vector3[,] posMatrix;
-        [SerializeField] bool isMoving;
+        bool isMoving;
+        bool isControl = true;
 
         private void Awake()
         {
@@ -51,12 +52,19 @@ namespace RPG.Control
 
         private void Update()
         {
+            if(Input.GetKeyDown(KeyCode.G))
+            {
+                isControl = !isControl;
+
+                if (!isControl) CancelOrders();
+            }
+
             GetInFormation();
         }
 
         private void GiveOrders()
         {
-            if (followers.Count == 0) return;
+            if (!isControl || followers.Count == 0) return;
 
             isMoving = false;
 
@@ -64,12 +72,21 @@ namespace RPG.Control
             {
                 foreach (AIController follower in followers)
                 {
-                    follower.SetCurrentTarget(myFighter.GetTarget());
+                    follower.GetComponent<Fighter>().StartAttackAction(myFighter.GetTarget(), myMover.GetSpeedFraction(), priority);
                 }
             }
             else if (actionScheduler.GetCurrentActionType() == ActionType.Move)
             {
                 isMoving = true;
+            }
+        }
+
+        private void CancelOrders()
+        {
+            isMoving = false;
+            foreach (AIController follower in followers)
+            {
+                follower.GetComponent<ActionScheduler>().CancelCurrentAction();
             }
         }
 
@@ -86,7 +103,7 @@ namespace RPG.Control
         private void GetInFormation()
         {
             if (!isMoving) return;
-
+            
             posMatrix = GetFormationPositions(transform.position);
             int unitIndex = 0;
 
@@ -97,7 +114,7 @@ namespace RPG.Control
                     if (unitIndex == followers.Count) return;
 
                     Mover mover = followers[unitIndex].GetComponent<Mover>();
-                    mover.StartMoveAction(posMatrix[i, j], 1f, priority);
+                    mover.StartMoveAction(posMatrix[i, j], myMover.GetSpeedFraction(), priority);
                     followers[unitIndex].SetGuardPosition(posMatrix[i, j]);
                 }
             }

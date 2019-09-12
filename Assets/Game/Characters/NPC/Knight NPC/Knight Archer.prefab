@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 1933936466039981789, guid: cbe1d337f2ba1454cab207321c50b8d1,
         type: 3}
       propertyPath: m_Name
-      value: Player Archer
+      value: Knight Archer
       objectReference: {fileID: 0}
     - target: {fileID: 5592669437336382844, guid: cbe1d337f2ba1454cab207321c50b8d1,
         type: 3}
@@ -76,12 +76,12 @@ PrefabInstance:
     - target: {fileID: 4603188462511416819, guid: cbe1d337f2ba1454cab207321c50b8d1,
         type: 3}
       propertyPath: startingClan
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4511993387223608315, guid: cbe1d337f2ba1454cab207321c50b8d1,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 3f6fc0cf5e5d31c458bc74ede87cb8ae, type: 2}
+      objectReference: {fileID: 2100000, guid: 01b2546c969fe814794af634cb4534f4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbe1d337f2ba1454cab207321c50b8d1, type: 3}

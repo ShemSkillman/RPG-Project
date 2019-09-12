@@ -14,10 +14,10 @@ namespace RPG.Movement
         private Animator animator;
         private Health health;
         ActionScheduler actionScheduler;
+        Coroutine currentMoveAction;
 
         [SerializeField] float maxSpeed = 5.66f;
         [SerializeField] float tolerance = 1f;
-        bool isActive;
 
         private void Awake()
         {
@@ -31,11 +31,16 @@ namespace RPG.Movement
         {
             navMeshAgent.enabled = !health.GetIsDead();
             UpdateAnimator();
+        }
 
-            if (isActive && AtDestination())
+        IEnumerator MoveActionProgress()
+        {
+            while (!health.GetIsDead() && !AtDestination())
             {
-                MovementComplete();
+                yield return null;
             }
+
+            MovementComplete();
         }
 
         private void UpdateAnimator()
@@ -54,7 +59,9 @@ namespace RPG.Movement
             if (!actionScheduler.StartAction(this, actionPriority, ActionType.Move) || !navMeshAgent.enabled) return false;
 
             MoveTo(destination, speedFraction);
-            isActive = true;
+
+            if (currentMoveAction != null) StopCoroutine(currentMoveAction);
+            currentMoveAction = StartCoroutine(MoveActionProgress());
 
             actionScheduler.onStartAction?.Invoke();
             return true;
@@ -82,20 +89,27 @@ namespace RPG.Movement
         //public Vector3 GetNextPathCorner()
         //{
         //    Vector3[] corners = navMeshAgent.path.corners;
-
-        //    print(corners.Length);
+            
         //    if (corners.Length > 1) return corners[1];
 
         //    return transform.position;
-        //}       
+        //}
 
         private bool AtDestination()
         {
-            if (navMeshAgent.enabled 
-                && navMeshAgent.remainingDistance <= tolerance)
+            if (!navMeshAgent.enabled || navMeshAgent.pathPending) return false;
+
+            if (navMeshAgent.remainingDistance <= tolerance)
             {
                 return true;
             }
+
+            return false;
+        }
+
+        public bool IsAtLocation(Vector3 location)
+        {
+            if (Vector3.Distance(transform.position, location) <= tolerance) return true;
             return false;
         }
 
@@ -114,9 +128,19 @@ namespace RPG.Movement
             return transform.position;
         }
 
+        public float GetSpeedFraction()
+        {
+            return (navMeshAgent.speed / maxSpeed);
+        }
+
         public void Cancel()
         {
-            isActive = false;
+            if (currentMoveAction != null) StopCoroutine(currentMoveAction);
+            Stop();
+        }
+
+        public void Stop()
+        {
             if (navMeshAgent.enabled) navMeshAgent.isStopped = true;
         }
 

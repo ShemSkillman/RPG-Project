@@ -2,10 +2,12 @@
 using RPG.Movement;
 using RPG.Core;
 using RPG.Saving;
+using RPG.Attributes;
 using RPG.Stats;
 using System.Collections.Generic;
 using GameDevTV.Utils;
 using System;
+using System.Collections;
 
 namespace RPG.Combat
 {
@@ -16,24 +18,28 @@ namespace RPG.Combat
         [SerializeField] Transform leftHandTransform;
         [SerializeField] WeaponConfig defaultWeapon;
 
-        bool isMovingCloser = false;
-        bool isActive = false;
-
+        Coroutine currentAttackAction;
         CombatTarget target;
+        CombatTarget myCombatTarget;
         float timeSinceLastAttack = Mathf.Infinity;
         WeaponConfig currentWeaponConfig;
         LazyValue<Weapon> currentWeapon;
+        float weaponCoolDownTime = 0f;
+        const float variance = 0.2f;
 
         Mover mover;
         Animator animator;
         BaseStats baseStats;
         ActionScheduler actionScheduler;
+        Health health;
 
         private void Awake()
         {
             mover = GetComponent<Mover>();
+            myCombatTarget = GetComponent<CombatTarget>();
             animator = GetComponent<Animator>();
             baseStats = GetComponent<BaseStats>();
+            health = GetComponent<Health>();
             actionScheduler = GetComponent<ActionScheduler>();
             currentWeaponConfig = defaultWeapon;
             currentWeapon = new LazyValue<Weapon>(GetInitialCurrentWeapon);
@@ -53,6 +59,7 @@ namespace RPG.Combat
         {
             currentWeaponConfig = weapon;
             currentWeapon.value = AttachWeapon(weapon);
+            RandomizeWeaponCoolDown();
         }
 
         private Weapon AttachWeapon(WeaponConfig weapon)
@@ -68,22 +75,32 @@ namespace RPG.Combat
         private void Update()
         {
             timeSinceLastAttack += Time.deltaTime;
+        }
 
-            if (!isActive || !CanAttack(target)) return;
+        IEnumerator AttackActionProgress(float speedFraction)
+        {
+            bool isMovingCloser = false;
 
-            bool inRange = Vector3.Distance(transform.position, target.transform.position) <= currentWeaponConfig.GetWeaponRange();
-
-            if (!inRange && !isMovingCloser || !IsComfortableRange() && isMovingCloser) // MOVE TO TARGET
+            while (!health.GetIsDead() && CanAttack(target))
             {
-                isMovingCloser = true;
-                mover.MoveTo(target.transform.position, 1f);
-            }
-            else // STOP AND ATTACK
-            {
-                isMovingCloser = false;
-                mover.Cancel();
-                AttackBehaviour();
-            }
+                bool inRange = Vector3.Distance(transform.position, target.transform.position) <= currentWeaponConfig.GetWeaponRange();
+
+                if (!inRange && !isMovingCloser || !IsComfortableRange() && isMovingCloser) // MOVE TO TARGET
+                {
+                    isMovingCloser = true;
+                    mover.MoveTo(target.transform.position, speedFraction);
+                }
+                else // STOP AND ATTACK
+                {
+                    isMovingCloser = false;
+                    mover.Cancel();
+                    AttackBehaviour();
+                }
+
+                yield return null;
+            }        
+
+            AttackComplete();
         }
 
         private bool IsComfortableRange()
@@ -94,12 +111,28 @@ namespace RPG.Combat
         private void AttackBehaviour()
         {
             LookAtTarget();
-            if (timeSinceLastAttack >= currentWeaponConfig.GetTimeBetweenAttacks())
+            if (ReadyToAttack())
             {
                 // This will trigger the Hit() event
-                timeSinceLastAttack = 0f;
                 TriggerAttackAnimation();
             }
+        }
+
+        private bool ReadyToAttack()
+        {
+            if (timeSinceLastAttack >= weaponCoolDownTime)
+            {
+                timeSinceLastAttack = 0f;
+                RandomizeWeaponCoolDown();
+                return true;
+            }
+
+            return false;
+        }
+
+        private void RandomizeWeaponCoolDown()
+        {
+            weaponCoolDownTime = currentWeaponConfig.GetTimeBetweenAttacks() * UnityEngine.Random.Range(1f - variance, 1f + variance);
         }
 
         private void LookAtTarget()
@@ -144,12 +177,14 @@ namespace RPG.Combat
             Hit();
         }
 
-        public bool StartAttackAction(CombatTarget combatTarget, int actionPriority)
+        public bool StartAttackAction(CombatTarget combatTarget, float moveSpeedFraction, int actionPriority)
         {
             if (!actionScheduler.StartAction(this, actionPriority, ActionType.Attack)) return false;
 
             target = combatTarget;
-            isActive = true;
+
+            if (currentAttackAction != null) StopCoroutine(currentAttackAction);
+            currentAttackAction = StartCoroutine(AttackActionProgress(moveSpeedFraction));
 
             actionScheduler.onStartAction?.Invoke();
             return true;
@@ -158,13 +193,13 @@ namespace RPG.Combat
         public bool CanAttack(CombatTarget combatTarget)
         {
             if (combatTarget != null && 
-                !combatTarget.GetIsDead())
+                !combatTarget.GetIsDead() &&
+                combatTarget.GetClan() != myCombatTarget.GetClan())
             {
                 return true;
             }
             else
             {
-                if (isActive) AttackComplete();
                 return false;
             }
         }
@@ -176,9 +211,9 @@ namespace RPG.Combat
 
         public void Cancel()
         {
-            isActive = false;
+            if (currentAttackAction != null) StopCoroutine(currentAttackAction);
             target = null;
-            mover.Cancel();
+            mover.Stop();
             animator.ResetTrigger("attack");
             animator.SetTrigger("stopAttack");
         }

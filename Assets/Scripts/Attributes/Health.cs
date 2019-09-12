@@ -13,11 +13,14 @@ namespace RPG.Attributes
     {
         LazyValue<int> healthPoints;
         LazyValue<int> maxHealthPoints;
-        private bool isDead = false;
-        
-        [SerializeField] float sinkSpeed = 1f;
+        bool isDead = false;
         
         public UnityEvent onHealthChange, onDie;
+
+        [Header("Body Sink Configuration:")]
+        [SerializeField] float minSinkSpeed = 0.0001f;
+        [SerializeField] float maxSinkSpeed = 0.001f;
+        [SerializeField] float maxSinkDistance = 1f;
 
         Animator animator;
         BaseStats baseStats;
@@ -97,7 +100,7 @@ namespace RPG.Attributes
         private IEnumerator BodySink()
         {
             float sinkDistance = 0f;
-            float maxSinkDistance = UnityEngine.Random.value;
+            float sinkSpeed = UnityEngine.Random.Range(minSinkSpeed, maxSinkSpeed);
             while (sinkDistance < maxSinkDistance)
             {
                 sinkDistance += Time.deltaTime * sinkSpeed;
@@ -105,6 +108,8 @@ namespace RPG.Attributes
                 
                 yield return null;
             }
+
+            Destroy(gameObject);
         }
 
         public bool GetIsDead()

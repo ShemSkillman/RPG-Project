@@ -12,10 +12,13 @@ namespace RPG.Control
 {
     public class AIController : MonoBehaviour
     {
-        [SerializeField] GroupLeader leader;
+        [SerializeField] protected GroupLeader leader;
         [SerializeField] protected float sightRange = 10f;
-        [SerializeField] float reactionTime = 0.2f;
+        [SerializeField] protected float chaseDistance = 20f;
+        [SerializeField] protected float reactionTime = 0.2f;
         [SerializeField] protected float suspicionTime = 5f;
+        [Range(0f, 1f)]
+        [SerializeField] protected float normalSpeedFraction = 0.8f;
         protected const int priority = 1;
 
         // Cache references
@@ -26,7 +29,8 @@ namespace RPG.Control
         protected ActionScheduler actionScheduler;
         protected CombatTarget myCombatTarget;
 
-        protected CombatTarget currentTarget;
+        [SerializeField] protected CombatTarget currentTarget;
+        protected CombatTarget lostTarget;
         protected List<CombatTarget> enemies = new List<CombatTarget>();
         protected List<CombatTarget> allies = new List<CombatTarget>();
         protected float timeSinceLastSawEnemy = Mathf.Infinity;
@@ -94,6 +98,11 @@ namespace RPG.Control
 
         protected void Update()
         {
+            Timers();
+        }
+
+        protected virtual void Timers()
+        {
             timeSinceLastSawEnemy += Time.deltaTime;
         }
 
@@ -105,17 +114,18 @@ namespace RPG.Control
 
                 if (!isSchedulerFree) continue;
 
-                currentTarget = CheckProximity();
-                CallForHelp();
+                CheckCurrentTarget();
+                CheckProximity();
+                AssistAllies();
 
                 if (currentTarget != null)
                 {
                     timeSinceLastSawEnemy = 0f;
                     AttackBehaviour();
                 }
-                else if (timeSinceLastSawEnemy <= suspicionTime)
+                else if (IsIdle())
                 {
-                    SuspiciousBehaviour();
+                    IdleBehaviour();
                 }
                 else
                 {
@@ -124,15 +134,26 @@ namespace RPG.Control
             }
         }
 
-        protected virtual void MovementBehaviour()
+        protected virtual bool IsIdle()
         {
-            if (actionScheduler.GetCurrentActionType() == ActionType.Move && mover.GetDestination() == guardPosition.value) return;
+            if (timeSinceLastSawEnemy <= suspicionTime) return true;
 
-            CheckSchedulerFree(mover.StartMoveAction(guardPosition.value, 1f, priority));
+            lostTarget = null;
+            return false;
         }
 
-        protected void SuspiciousBehaviour()
+        protected virtual void MovementBehaviour()
+        {            
+            if (mover.IsAtLocation(guardPosition.value) ||
+                (actionScheduler.GetCurrentActionType() == ActionType.Move && mover.GetDestination() == guardPosition.value)) return;
+
+            CheckSchedulerFree(mover.StartMoveAction(guardPosition.value, normalSpeedFraction, priority));
+        }
+
+        protected void IdleBehaviour()
         {
+            if (lostTarget != null) LocateDistantTarget(lostTarget);
+
             if (actionScheduler.GetCurrentActionType() == ActionType.Stop) return;
 
             CheckSchedulerFree(mover.StartStopAction(priority));
@@ -142,7 +163,7 @@ namespace RPG.Control
         {
             if (actionScheduler.GetCurrentActionType() == ActionType.Attack && currentTarget == fighter.GetTarget()) return;
             
-            CheckSchedulerFree(fighter.StartAttackAction(currentTarget, priority));
+            CheckSchedulerFree(fighter.StartAttackAction(currentTarget, normalSpeedFraction, priority));
         }
 
         protected void CheckSchedulerFree(bool isStartActionSuccessful)
@@ -161,11 +182,22 @@ namespace RPG.Control
             actionScheduler.onFinishAction -= SchedulerFree;
         }
 
-        protected CombatTarget CheckProximity()
+        protected void CheckCurrentTarget()
         {
-            if (fighter.CanAttack(currentTarget)) return currentTarget;
+            if (!fighter.CanAttack(currentTarget))
+            {
+                currentTarget = null;
+            }
+            else if (Vector3.Distance(transform.position, currentTarget.transform.position) > chaseDistance)
+            {
+                lostTarget = currentTarget;
+                currentTarget = null;
+            }
+        }
 
-            if (enemies.Count < 1) return null;
+        protected void CheckProximity()
+        {
+            if (enemies.Count < 1 || currentTarget != null) return;
 
             float closestEnemyDistance = sightRange;
             CombatTarget closestEnemy = null;
@@ -183,12 +215,15 @@ namespace RPG.Control
                 }
             }
 
-            return closestEnemy;
+            currentTarget = closestEnemy;
         }
 
-        protected void CallForHelp()
+        protected void AssistAllies()
         {
-            if (currentTarget == null || allies.Count < 1) return;
+            if (currentTarget != null || allies.Count < 1) return;
+
+            float closestEnemyDistance = Mathf.Infinity;
+            CombatTarget closestEnemy = null;
 
             foreach(CombatTarget ally in allies)
             {
@@ -198,24 +233,37 @@ namespace RPG.Control
 
                 if (distanceToAlly <= sightRange)
                 {
-                    ally.GetComponent<AIController>()?.SetCurrentTarget(currentTarget);
+                    CombatTarget allyTarget = ally.GetComponent<Fighter>().GetTarget();
+                    if (allyTarget == null) continue;
+
+                    if (Vector3.Distance(transform.position, allyTarget.transform.position) < closestEnemyDistance)
+                    {
+                        closestEnemy = allyTarget;
+                    }
                 }
             }
+
+            currentTarget = closestEnemy;
         }
 
         private void DecideAttackAgainstInstigator(AttackReport attackReport)
         {
-            Vector3 instigatorPos = attackReport.instigator.transform.position;
+            DecideAttackAgainstEnemy(attackReport.instigator.GetComponent<CombatTarget>());
+        }
+
+        private void DecideAttackAgainstEnemy(CombatTarget enemy)
+        {
             if (currentTarget == null ||
-                Vector3.Distance(instigatorPos, transform.position) < Vector3.Distance(currentTarget.transform.position, transform.position))
+                Vector3.Distance(enemy.transform.position, transform.position) < Vector3.Distance(currentTarget.transform.position, transform.position))
             {
-                currentTarget = attackReport.instigator.GetComponent<CombatTarget>();
+                currentTarget = enemy;
             }
         }
 
-        public void SetCurrentTarget(CombatTarget target)
+        public void LocateDistantTarget(CombatTarget target)
         {
-            if (currentTarget != null) return;
+            if (currentTarget != null ||
+                Vector3.Distance(transform.position, target.transform.position) > chaseDistance) return;
             currentTarget = target;
         }
 
@@ -224,6 +272,9 @@ namespace RPG.Control
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, sightRange);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, chaseDistance);
+
         }
     }
 }

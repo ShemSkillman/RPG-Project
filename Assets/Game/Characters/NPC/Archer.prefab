@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &2996688620099958712
+--- !u!1001 &948454849408091802
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 1729151708368175175, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: m_Name
-      value: Guard
+      value: Archer
       objectReference: {fileID: 0}
     - target: {fileID: 4662546753900850150, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
@@ -70,40 +70,13 @@ PrefabInstance:
     - target: {fileID: 2772544959275486886, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: characterClass
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3659272749301113705, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: startingClan
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2067403583217915154, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: chaseDistance
-      value: 20
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
         type: 3}
       propertyPath: defaultWeapon
       value: 
-      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+      objectReference: {fileID: 11400000, guid: 33d8f12ec9ec721428e85918f0f6f962,
         type: 2}
-    - target: {fileID: 7475209338910760283, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: defaultWeaponName
-      value: Enemy Bow
-      objectReference: {fileID: 0}
-    - target: {fileID: 5218127621977729630, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: maxSpeed
-      value: 5.66
-      objectReference: {fileID: 0}
-    - target: {fileID: 3725678372733889889, guid: 76216e1ed72164444bff33f8f97fbf12,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: bfbe2e8b331e2cc42be1591f949c0e41, type: 2}
-    m_RemovedComponents:
-    - {fileID: 7212728334827857852, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}
-    - {fileID: 3511814788765888186, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76216e1ed72164444bff33f8f97fbf12, type: 3}

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using RPG.Core;
 using UnityEngine;
 
 namespace RPG.Control
@@ -8,42 +7,48 @@ namespace RPG.Control
     {
         [Header("Patrol Configuration")]
         [SerializeField] protected PatrolPath patrolPath;
-        [SerializeField] protected float waypointTolerance = 1f;
         [SerializeField] protected float waypointDwellTime = 4f;
         [Range(0, 1)]
         [SerializeField] protected float patrolSpeedFraction = 0.2f;
+        [SerializeField] protected float waypointTolerance = 0.1f;
 
         protected int currentWaypointIndex = 0;
-        protected float timeSinceWaypointArrival = Mathf.Infinity;
+        protected float timeOnWaypoint = Mathf.Infinity;
+
+        protected override void Timers()
+        {
+            base.Timers();
+
+            if (patrolPath != null) timeOnWaypoint += Time.deltaTime;
+        }
+
+        protected override bool IsIdle()
+        {
+            if (patrolPath == null) return base.IsIdle();
+
+            return base.IsIdle() || (AtWaypoint() && timeOnWaypoint <= waypointDwellTime);
+        }
 
         protected override void MovementBehaviour()
         {
-            Vector3 nextPosition = guardPosition.value;
-
-            if (patrolPath != null)
+            if (patrolPath == null)
             {
-                if (AtWaypoint())
-                {
-                    timeSinceWaypointArrival += Time.deltaTime;
-                    if (timeSinceWaypointArrival > waypointDwellTime)
-                    {
-                        CycleWaypoint();
-                    }
-                }
-                else
-                {
-                    timeSinceWaypointArrival = 0f;
-                }
-                nextPosition = GetCurrentWaypoint();
+                base.MovementBehaviour();
+                return;
             }
 
-            mover.StartMoveAction(nextPosition, patrolSpeedFraction, priority);
-        }
+            if (actionScheduler.GetCurrentActionType() == ActionType.Move && mover.GetDestination() == guardPosition.value) return;
 
-        protected bool AtWaypoint()
-        {
-            float distanceToWaypoint = Vector3.Distance(transform.position, GetCurrentWaypoint());
-            return distanceToWaypoint <= waypointTolerance;
+            if (!AtWaypoint())
+            {
+                timeOnWaypoint = 0f;
+            }
+            else if(timeOnWaypoint > waypointDwellTime)
+            {
+                CycleWaypoint();
+            }
+
+            CheckSchedulerFree(mover.StartMoveAction(GetCurrentWaypoint(), patrolSpeedFraction, priority));
         }
 
         protected Vector3 GetCurrentWaypoint()
@@ -54,6 +59,16 @@ namespace RPG.Control
         protected void CycleWaypoint()
         {
             currentWaypointIndex = patrolPath.GetNextWaypointIndex(currentWaypointIndex);
+        }
+
+        public bool AtWaypoint()
+        {
+            Vector3 guardPos = new Vector3(transform.position.x, 0f, transform.position.z);
+            Vector3 waypointPos = new Vector3(GetCurrentWaypoint().x, 0f, GetCurrentWaypoint().z);
+
+            if (Vector3.Distance(guardPos, waypointPos) <= waypointTolerance) return true;
+
+            return false;
         }
     }
 }
