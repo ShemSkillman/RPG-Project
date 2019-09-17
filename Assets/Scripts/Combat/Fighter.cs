@@ -13,18 +13,16 @@ namespace RPG.Combat
 {
     public class Fighter : MonoBehaviour, IAction, ISaveable, IModifierProvider
     {
-        // Configuration parameters
-        [SerializeField] Transform rightHandTransform;
-        [SerializeField] Transform leftHandTransform;
         [SerializeField] WeaponConfig defaultWeapon;
 
+        [SerializeField] Transform rightHandTransform, leftHandTransform;
+        const string rightHandName = "Hand_R", leftHandName = "Hand_L";
+
         Coroutine currentAttackAction;
-        CombatTarget target;
-        CombatTarget myCombatTarget;
-        float timeSinceLastAttack = Mathf.Infinity;
+        CombatTarget target, myCombatTarget;
         WeaponConfig currentWeaponConfig;
         LazyValue<Weapon> currentWeapon;
-        float weaponCoolDownTime = 0f;
+        float timeSinceLastAttack = Mathf.Infinity, weaponCoolDownTime = 0f;
         const float variance = 0.2f;
 
         Mover mover;
@@ -43,27 +41,47 @@ namespace RPG.Combat
             actionScheduler = GetComponent<ActionScheduler>();
             currentWeaponConfig = defaultWeapon;
             currentWeapon = new LazyValue<Weapon>(GetInitialCurrentWeapon);
+            FindHands();
         }
 
         private void Start()
         {
             currentWeapon.ForceInit();
-        }
+        }        
 
         private Weapon GetInitialCurrentWeapon()
         {
             return AttachWeapon(defaultWeapon);
         }
 
+        private void FindHands()
+        {
+            Transform[] children = GetComponentsInChildren<Transform>();
+
+            foreach (Transform child in children)
+            {
+                if (child.gameObject.name == leftHandName)
+                {
+                    leftHandTransform = child;
+                }
+                else if (child.gameObject.name == rightHandName)
+                {
+                    rightHandTransform = child;
+                }
+
+                if (leftHandTransform != null && rightHandTransform != null) return;
+            }
+        }
+
         public void EquipWeapon(WeaponConfig weapon)
         {
             currentWeaponConfig = weapon;
             currentWeapon.value = AttachWeapon(weapon);
-            RandomizeWeaponCoolDown();
         }
 
         private Weapon AttachWeapon(WeaponConfig weapon)
         {
+            RandomizeWeaponCoolDown();
             return weapon.Spawn(rightHandTransform, leftHandTransform, animator);
         }
 

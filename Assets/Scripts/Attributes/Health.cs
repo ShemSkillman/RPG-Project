@@ -15,7 +15,8 @@ namespace RPG.Attributes
         LazyValue<int> maxHealthPoints;
         bool isDead = false;
         
-        public UnityEvent onHealthChange, onDie;
+        public UnityEvent onTakeDamage, onDie;
+        public event Action onHealthChange;
 
         [Header("Body Sink Configuration:")]
         [SerializeField] float minSinkSpeed = 0.0001f;
@@ -70,7 +71,9 @@ namespace RPG.Attributes
             if (isDead) return false;
 
             healthPoints.value = Mathf.Max(healthPoints.value - damageTaken, 0);
-            onHealthChange.Invoke();
+
+            onTakeDamage.Invoke();
+            onHealthChange();
 
             if (healthPoints.value < 1)
             {
@@ -80,6 +83,14 @@ namespace RPG.Attributes
             }
 
             return true;
+        }
+
+        public void Heal(int healthToRestore)
+        {
+            if (isDead) return;
+
+            healthPoints.value = Mathf.Min(healthPoints.value + healthToRestore, maxHealthPoints.value);
+            onHealthChange();
         }
 
         private void GrantExperience(GameObject instigator)

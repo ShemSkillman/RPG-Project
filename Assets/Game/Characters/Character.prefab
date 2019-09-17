@@ -247,9 +247,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd5afb21c794e9e4e99e364ba022f5f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultWeapon: {fileID: 11400000, guid: 45c16ff2d1cdb074293a26d9682cc991, type: 2}
   rightHandTransform: {fileID: 0}
   leftHandTransform: {fileID: 0}
-  defaultWeapon: {fileID: 11400000, guid: 45c16ff2d1cdb074293a26d9682cc991, type: 2}
 --- !u!195 &7676661998087279248
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -281,7 +281,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5654971481426887976}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: d288a0e4a2d923b46898986e979da643, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 32562d1256a1b3b4ca9be3d6ce7adf64, type: 3}
   m_Controller: {fileID: 9100000, guid: 317834e94a041f443ae02a7d3ec9c421, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -303,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2b5b5eb1da33624580ee441e538302a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHealthChange:
+  onTakeDamage:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5210756956861768015}
