@@ -15,7 +15,7 @@ namespace RPG.Combat
     {
         [SerializeField] WeaponConfig defaultWeapon;
 
-        [SerializeField] Transform rightHandTransform, leftHandTransform;
+        Transform rightHandTransform, leftHandTransform;
         const string rightHandName = "Hand_R", leftHandName = "Hand_L";
 
         Coroutine currentAttackAction;

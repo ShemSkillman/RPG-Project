@@ -6,6 +6,7 @@ using System;
 using UnityEngine.EventSystems;
 using UnityEngine.AI;
 using RPG.Control.Cursor;
+using Cinemachine;
 
 namespace RPG.Control
 {
@@ -15,6 +16,9 @@ namespace RPG.Control
         private Mover mover;
         private Fighter fighter;
         private Health health;
+
+        [SerializeField] CinemachineFreeLook freelookCam;
+        bool camControl = false;
 
         [SerializeField] float navMeshProjectionDistance = 1f;
         [SerializeField] float maxPathLength = 40f;
@@ -39,9 +43,11 @@ namespace RPG.Control
 
         void Update()
         {
+            PlayerViewControls();
+
             if (InteractWithUI()) return;
 
-            if (health.GetIsDead())
+            if (camControl || health.GetIsDead())
             {
                 SetCursor(CursorType.None);
                 return;
@@ -50,6 +56,34 @@ namespace RPG.Control
             if (InteractWithComponent()) return;
             if (InteractWithMovement()) return;
             SetCursor(CursorType.None);
+        }
+
+        private void PlayerViewControls()
+        {
+            if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonUp(1))
+            {
+                SwitchCameraControl();
+            }
+
+            freelookCam.m_Lens.FieldOfView = Mathf.Clamp(freelookCam.m_Lens.FieldOfView - Input.GetAxisRaw("Mouse ScrollWheel") * 20, 5f, 80f);
+        }
+
+        private void SwitchCameraControl()
+        {
+            camControl = !camControl;
+
+            if(camControl)
+            {
+                freelookCam.m_XAxis.m_InputAxisName = "Mouse X";
+                freelookCam.m_YAxis.m_InputAxisName = "Mouse Y";
+            }
+            else
+            {
+                freelookCam.m_XAxis.m_InputAxisName = "";
+                freelookCam.m_YAxis.m_InputAxisName = "";
+                freelookCam.m_XAxis.Reset();
+                freelookCam.m_YAxis.Reset();
+            }
         }
 
         private bool InteractWithComponent()

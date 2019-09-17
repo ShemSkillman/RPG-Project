@@ -25,6 +25,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be93819662feff24dacb7978376bac3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followCam: {fileID: 0}
   navMeshProjectionDistance: 1
   maxPathLength: 40
   cursorMappings:
@@ -191,11 +192,6 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5654971481426887978, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
-        type: 3}
-      propertyPath: m_Avatar
-      value: 
-      objectReference: {fileID: 9000000, guid: 32562d1256a1b3b4ca9be3d6ce7adf64, type: 3}
     - target: {fileID: 9223194171723729865, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: characterClass
@@ -212,11 +208,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2564856691038766643, guid: 713fc9a47469ba444b004509f098afd4,
         type: 3}
-    - target: {fileID: 7676661998087279248, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7021399010919061827, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: healthPoints
@@ -227,11 +218,16 @@ PrefabInstance:
       propertyPath: onTakeDamage.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 534399219011909629, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
+    - target: {fileID: 7676661998087279248, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
-      propertyPath: uniqueIdentifier
-      value: player
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5654971481426887978, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
+        type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: 32562d1256a1b3b4ca9be3d6ce7adf64, type: 3}
     - target: {fileID: 4483359272705775668, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
         type: 3}
       propertyPath: weaponRange
@@ -286,6 +282,11 @@ PrefabInstance:
         type: 3}
       propertyPath: leftHandTransform
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 534399219011909629, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f,
+        type: 3}
+      propertyPath: uniqueIdentifier
+      value: player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8a4eb2cc2ebb2c4eb5ccc1afcca596f, type: 3}
