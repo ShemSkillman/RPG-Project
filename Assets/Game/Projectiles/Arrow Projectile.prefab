@@ -154,6 +154,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2609912362545171562}
   - component: {fileID: 2882149383510897643}
+  - component: {fileID: 154644665619518927}
   m_Layer: 0
   m_Name: Shoot Sound
   m_TagString: Untagged
@@ -185,9 +186,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 94fc62564eabf2e429355affe6bee585, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -271,6 +272,25 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &154644665619518927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481027555599226033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b73fad2f5628a514f9ed71f7c959abf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pitchVariation: 0.1
+  onAwake: 1
+  audioClips:
+  - {fileID: 8300000, guid: 16c6a0babf9bbae489f83f0626ec2690, type: 3}
+  - {fileID: 8300000, guid: fabcf664207e0154c8de5fb0bff4322b, type: 3}
+  - {fileID: 8300000, guid: 9a2c3a8de9b00d74abb86cb2c25a2b60, type: 3}
+  - {fileID: 8300000, guid: 0bff84767c06b934a81246970a735cc3, type: 3}
 --- !u!1 &1638470020990214575
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,7 +378,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1284567531354780711}
   - component: {fileID: 368316703049560765}
-  - component: {fileID: 493603723198446280}
+  - component: {fileID: 6771513353161229820}
   m_Layer: 0
   m_Name: Hit Sound
   m_TagString: Untagged
@@ -392,7 +412,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -476,7 +496,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &493603723198446280
+--- !u!114 &6771513353161229820
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -488,8 +508,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b73fad2f5628a514f9ed71f7c959abf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pitchVariation: 0
+  onAwake: 0
   audioClips:
-  - {fileID: 8300000, guid: 151fa7778dc9cf14ba998127d188283b, type: 3}
+  - {fileID: 8300000, guid: f49f197b138e8b047bdecee7c765acad, type: 3}
+  - {fileID: 8300000, guid: e7bbe4b1e48f1534791f101d48f17c9b, type: 3}
+  - {fileID: 8300000, guid: 2b6ac6f105f253645b3a1dd38a6fa4f4, type: 3}
+  - {fileID: 8300000, guid: f1470bb75b516b64b9968ad0b9fed1c4, type: 3}
 --- !u!1 &4754808541160444500
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,7 +607,7 @@ MonoBehaviour:
   onHit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 493603723198446280}
+      - m_Target: {fileID: 6771513353161229820}
         m_MethodName: PlayRandomAudio
         m_Mode: 1
         m_Arguments:

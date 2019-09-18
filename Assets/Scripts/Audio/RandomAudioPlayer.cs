@@ -5,19 +5,23 @@ namespace RPG.Audio
 {
     public class RandomAudioPlayer : MonoBehaviour
     {
+        [Range(0f, 1f)]
+        [SerializeField] float pitchVariation = 0.1f;
+        [SerializeField] bool onAwake = false;
         [SerializeField] AudioClip[] audioClips;
+
         AudioSource audioSource;
-        const float pitchVariation = 0.2f;
 
         private void Awake()
         {
             audioSource = GetComponent<AudioSource>();
+            if (onAwake) PlayRandomAudio();
         }
 
         public void PlayRandomAudio()
         {
             audioSource.clip = audioClips[UnityEngine.Random.Range(0, audioClips.Length)];
-            audioSource.pitch = UnityEngine.Random.Range(1 - 0.2f, 1 + 0.2f);
+            audioSource.pitch = UnityEngine.Random.Range(audioSource.pitch - pitchVariation, audioSource.pitch + pitchVariation);
             audioSource.Play();
         }
     }

@@ -105,7 +105,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClips:
-  - {fileID: 8300000, guid: 8c4a6d3173c94d04c9896a4afd752f69, type: 3}
+  - {fileID: 8300000, guid: 11713dcbce81c8646b0befd57b727097, type: 3}
+  - {fileID: 8300000, guid: ee2f540f9af9e3c438d7c6ad19616a5c, type: 3}
+  - {fileID: 8300000, guid: 39055ad3d5e090d4cbff758eb0b0fcba, type: 3}
+  - {fileID: 8300000, guid: 2dfd73914eaa5154e9ea540215bc8e45, type: 3}
+  pitchVariation: 0.1
 --- !u!82 &2922329359095578720
 AudioSource:
   m_ObjectHideFlags: 0

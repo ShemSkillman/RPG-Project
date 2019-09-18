@@ -5,11 +5,17 @@ namespace RPG.Combat
 {
     public class Weapon : MonoBehaviour
     {
-        [SerializeField] UnityEvent onAttack;
+        [SerializeField] UnityEvent onStartAttack;
+        [SerializeField] UnityEvent onEndAttack;
 
-        public void OnAttack()
+        public void OnStartAttack()
         {
-            onAttack.Invoke();
+            onStartAttack.Invoke();
+        }
+
+        public void OnEndAttack()
+        {
+            onEndAttack.Invoke();
         }
     }
 }

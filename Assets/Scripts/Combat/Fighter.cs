@@ -133,6 +133,11 @@ namespace RPG.Combat
             {
                 // This will trigger the Hit() event
                 TriggerAttackAnimation();
+
+                if (currentWeapon.value != null)
+                {
+                    currentWeapon.value.OnStartAttack();
+                }
             }
         }
 
@@ -184,7 +189,7 @@ namespace RPG.Combat
 
             if (currentWeapon.value != null)
             {
-                currentWeapon.value.OnAttack();
+                currentWeapon.value.OnEndAttack();
             }
         }
 

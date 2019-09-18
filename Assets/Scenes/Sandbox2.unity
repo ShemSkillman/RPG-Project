@@ -320,15 +320,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1515357831, guid: c356c1539ae85de45a586ed59e190da0, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.1769701
+      value: 0.17697008
       objectReference: {fileID: 0}
     - target: {fileID: 1515357831, guid: c356c1539ae85de45a586ed59e190da0, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.5374304
+      value: -0.53743035
       objectReference: {fileID: 0}
     - target: {fileID: 1515357831, guid: c356c1539ae85de45a586ed59e190da0, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.11651737
+      value: 0.11651736
       objectReference: {fileID: 0}
     - target: {fileID: 1515357831, guid: c356c1539ae85de45a586ed59e190da0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -336,7 +336,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1515357831, guid: c356c1539ae85de45a586ed59e190da0, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.81625605
+      value: 0.8162561
       objectReference: {fileID: 0}
     - target: {fileID: 1515357831, guid: c356c1539ae85de45a586ed59e190da0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -378,6 +378,12 @@ PrefabInstance:
       propertyPath: m_LocalRotation.w
       value: 0.8221456
       objectReference: {fileID: 0}
+    - target: {fileID: 2565591181820773478, guid: c356c1539ae85de45a586ed59e190da0,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 2dceaffab8341a0479d2bdfa11bf7946,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c356c1539ae85de45a586ed59e190da0, type: 3}
 --- !u!4 &247193524 stripped
@@ -397,6 +403,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player Archer (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6962154248922011917, guid: 61b8849c8d97bc0428c2a2d669bad1e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4023145644911473324, guid: 61b8849c8d97bc0428c2a2d669bad1e3,
         type: 3}
@@ -463,6 +474,12 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 1919389859}
+    - target: {fileID: 1215096130074297361, guid: 61b8849c8d97bc0428c2a2d669bad1e3,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61b8849c8d97bc0428c2a2d669bad1e3, type: 3}
 --- !u!1 &522299484
@@ -647,6 +664,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Guard (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 2883179803704863407, guid: 7e68f0d2acac78349a57b7359ba1585d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9171724683832852750, guid: 7e68f0d2acac78349a57b7359ba1585d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -712,6 +734,12 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 1919389859}
+    - target: {fileID: 6359493726243813299, guid: 7e68f0d2acac78349a57b7359ba1585d,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e68f0d2acac78349a57b7359ba1585d, type: 3}
 --- !u!114 &730130319 stripped
@@ -755,6 +783,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bandit Captain (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2241317834425628583, guid: dc8cb4b20beb657449093c8e808da014,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5211048992335289350, guid: dc8cb4b20beb657449093c8e808da014,
         type: 3}
@@ -816,6 +849,12 @@ PrefabInstance:
       propertyPath: uniqueIdentifier
       value: 2cad1116-409f-459d-827f-ae606800731b
       objectReference: {fileID: 0}
+    - target: {fileID: 8023351486732905147, guid: dc8cb4b20beb657449093c8e808da014,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc8cb4b20beb657449093c8e808da014, type: 3}
 --- !u!1001 &926444416
@@ -1064,6 +1103,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Guard (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 2883179803704863407, guid: 7e68f0d2acac78349a57b7359ba1585d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9171724683832852750, guid: 7e68f0d2acac78349a57b7359ba1585d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1129,6 +1173,12 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 1919389859}
+    - target: {fileID: 6359493726243813299, guid: 7e68f0d2acac78349a57b7359ba1585d,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e68f0d2acac78349a57b7359ba1585d, type: 3}
 --- !u!1001 &1687725212
@@ -1142,6 +1192,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bandit Guard (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2883179803704863407, guid: 1bb672a19c87db8489f6d6b28f0ce2e7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9171724683832852750, guid: 1bb672a19c87db8489f6d6b28f0ce2e7,
         type: 3}
@@ -1208,6 +1263,12 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 1970744958}
+    - target: {fileID: 6359493726243813299, guid: 1bb672a19c87db8489f6d6b28f0ce2e7,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1bb672a19c87db8489f6d6b28f0ce2e7, type: 3}
 --- !u!1 &1740652384
@@ -1434,6 +1495,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Archer (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6962154248922011917, guid: 61b8849c8d97bc0428c2a2d669bad1e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4023145644911473324, guid: 61b8849c8d97bc0428c2a2d669bad1e3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1499,6 +1565,12 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 1919389859}
+    - target: {fileID: 1215096130074297361, guid: 61b8849c8d97bc0428c2a2d669bad1e3,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61b8849c8d97bc0428c2a2d669bad1e3, type: 3}
 --- !u!1001 &2094351690
@@ -1573,6 +1645,12 @@ PrefabInstance:
       propertyPath: uniqueIdentifier
       value: c6e63de8-00c3-4f1f-b8ad-7b5fe2fccdf2
       objectReference: {fileID: 0}
+    - target: {fileID: 6359493726243813299, guid: 1bb672a19c87db8489f6d6b28f0ce2e7,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1bb672a19c87db8489f6d6b28f0ce2e7, type: 3}
 --- !u!1001 &2109588246
@@ -1586,6 +1664,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player Guard (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2883179803704863407, guid: 7e68f0d2acac78349a57b7359ba1585d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9171724683832852750, guid: 7e68f0d2acac78349a57b7359ba1585d,
         type: 3}
@@ -1652,6 +1735,12 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 1919389859}
+    - target: {fileID: 6359493726243813299, guid: 7e68f0d2acac78349a57b7359ba1585d,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e68f0d2acac78349a57b7359ba1585d, type: 3}
 --- !u!1001 &2124323476
@@ -1665,6 +1754,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bandit Archer (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6962154248922011917, guid: 52b8bf69728712244a524f7bae9e9452,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4023145644911473324, guid: 52b8bf69728712244a524f7bae9e9452,
         type: 3}
@@ -1726,6 +1820,12 @@ PrefabInstance:
       propertyPath: uniqueIdentifier
       value: ceddccb9-026f-4c63-a781-ab693edcf254
       objectReference: {fileID: 0}
+    - target: {fileID: 1215096130074297361, guid: 52b8bf69728712244a524f7bae9e9452,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52b8bf69728712244a524f7bae9e9452, type: 3}
 --- !u!1001 &2136135207
@@ -1739,6 +1839,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bandit Guard (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2883179803704863407, guid: 1bb672a19c87db8489f6d6b28f0ce2e7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9171724683832852750, guid: 1bb672a19c87db8489f6d6b28f0ce2e7,
         type: 3}
@@ -1805,6 +1910,12 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 1970744958}
+    - target: {fileID: 6359493726243813299, guid: 1bb672a19c87db8489f6d6b28f0ce2e7,
+        type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 429623249e3f2af4db4d26ba6645a843,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1bb672a19c87db8489f6d6b28f0ce2e7, type: 3}
 --- !u!1001 &1976974552138092280
