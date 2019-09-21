@@ -227,7 +227,7 @@ namespace RPG.Control
 
             foreach(CombatTarget ally in allies)
             {
-                if (ally.GetIsDead()) continue;
+                if (ally.GetIsDead() || (leader != null && leader.gameObject == ally.gameObject)) continue;
 
                 float distanceToAlly = Vector3.Distance(transform.position, ally.transform.position);
 

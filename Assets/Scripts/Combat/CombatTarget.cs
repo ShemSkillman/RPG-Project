@@ -2,6 +2,7 @@
 using RPG.Stats;
 using UnityEngine;
 using RPG.Control.Cursor;
+using RPG.Core;
 
 namespace RPG.Combat
 {
@@ -99,21 +100,19 @@ namespace RPG.Combat
             else return false;
         }
 
-        private int GetCritProtection(Stat attackType)
+        public bool HandleRaycast(GameObject player, ActionMarker attackMarker, ActionMarker waypointMarker, int priority)
         {
-            return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Defense);
-        }
-
-        public bool HandleRaycast(GameObject player)
-        {
-            if (gameObject.tag == "Player" || currentClan == Clan.PlayerParty) return false;
-
             Fighter playerFighter = player.GetComponent<Fighter>();
-            if (!playerFighter.CanAttack(this)) return false;
+
+            if (!playerFighter.CanAttack(this) || tag == "Player" ||
+                GetClan() == Clan.PlayerParty) return false;
 
             if (Input.GetMouseButtonDown(0))
             {
-                playerFighter.StartAttackAction(this, 1f, 2);
+                playerFighter.StartAttackAction(this, 1f, priority);
+
+                ActionMarker marker = Instantiate(attackMarker, transform.position, attackMarker.transform.rotation);
+                marker.SetMarker(player.GetComponent<ActionScheduler>(), transform);
             }
 
             return true;
@@ -122,6 +121,11 @@ namespace RPG.Combat
         public CursorType GetCursorType()
         {
             return CursorType.Combat;
+        }
+
+        private int GetCritProtection(Stat attackType)
+        {
+            return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Defense);
         }
 
         public bool GetIsDead()
@@ -142,6 +146,6 @@ namespace RPG.Combat
         public void ChangeClan(Clan newClan)
         {
             entityManager.ChangeClan(this, newClan);
-        }
+        }        
     }    
 }

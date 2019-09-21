@@ -16,15 +16,15 @@ namespace RPG.Control
         Fighter myFighter;
         ActionScheduler actionScheduler;
         const int priority = 3;
-
+        
         [Header("Formation Configuration:")]
         [Range(1, 10)]
         [SerializeField] int unitCountToRowCountRatio = 1;
         [SerializeField] float spacing = 2f;
 
         Vector3[,] posMatrix;
-        bool isMoving;
         bool isControl = true;
+        bool isMoving = false;
 
         private void Awake()
         {
@@ -65,20 +65,31 @@ namespace RPG.Control
         private void GiveOrders()
         {
             if (!isControl || followers.Count == 0) return;
-
+            
             isMoving = false;
 
-            if (actionScheduler.GetCurrentActionType() == ActionType.Attack)
+            switch (actionScheduler.GetCurrentActionType())
             {
-                foreach (AIController follower in followers)
-                {
-                    follower.GetComponent<Fighter>().StartAttackAction(myFighter.GetTarget(), myMover.GetSpeedFraction(), priority);
-                }
+                case ActionType.Attack:
+                    GroupAttack();
+                    break;
+                case ActionType.Move:
+                    GroupMove();
+                    break;
             }
-            else if (actionScheduler.GetCurrentActionType() == ActionType.Move)
+        }
+
+        private void GroupAttack()
+        {
+            foreach (AIController follower in followers)
             {
-                isMoving = true;
+                follower.GetComponent<Fighter>().StartAttackAction(myFighter.GetTarget(), myMover.GetSpeedFraction(), priority);
             }
+        }
+
+        private void GroupMove()
+        {
+            isMoving = true;
         }
 
         private void CancelOrders()

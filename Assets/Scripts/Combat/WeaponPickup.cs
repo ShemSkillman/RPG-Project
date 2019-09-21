@@ -2,6 +2,8 @@
 using UnityEngine;
 using RPG.Control.Cursor;
 using RPG.Attributes;
+using RPG.Core;
+using RPG.Movement;
 
 namespace RPG.Combat
 {
@@ -19,24 +21,33 @@ namespace RPG.Combat
 
         private void OnTriggerEnter(Collider other)
         {
+            Pickup(other);
+        }
+
+        private void Pickup(Collider other)
+        {
             if (other.tag == "Player")
             {
-                Pickup(other.gameObject);
+                if (weaponPickup != null)
+                {
+                    other.gameObject.GetComponent<Fighter>().EquipWeapon(weaponPickup);
+                }
+                else if (healthToRestore > 0)
+                {
+                    other.gameObject.GetComponent<Health>().Heal(healthToRestore);
+                }
+
+                StartCoroutine(HideForSeconds(respawnTime));
             }
         }
 
-        private void Pickup(GameObject player)
+        private void GoToPickup(GameObject player, ActionMarker waypointMarker, int priority)
         {
-            if(weaponPickup != null)
+            if (player.GetComponent<Mover>().StartMoveAction(transform.position, 1f, priority))
             {
-                player.GetComponent<Fighter>().EquipWeapon(weaponPickup);
+                ActionMarker marker = Instantiate(waypointMarker, transform.position, waypointMarker.transform.rotation);
+                marker.SetMarker(player.GetComponent<ActionScheduler>(), null);
             }
-            else if (healthToRestore > 0)
-            {
-                player.GetComponent<Health>().Heal(healthToRestore);
-            }
-            
-            StartCoroutine(HideForSeconds(respawnTime));
         }
 
         private IEnumerator HideForSeconds(float seconds)
@@ -55,11 +66,11 @@ namespace RPG.Combat
             }
         }
 
-        public bool HandleRaycast(GameObject player)
+        public bool HandleRaycast(GameObject player, ActionMarker attackMarker, ActionMarker waypointMarker, int priority)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Pickup(player);
+                GoToPickup(player, waypointMarker, priority);
             }
 
             return true;

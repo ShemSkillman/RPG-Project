@@ -200,11 +200,11 @@ namespace RPG.Combat
             Hit();
         }
 
-        public bool StartAttackAction(CombatTarget combatTarget, float moveSpeedFraction, int actionPriority)
+        public bool StartAttackAction(CombatTarget newTarget, float moveSpeedFraction, int actionPriority)
         {
             if (!actionScheduler.StartAction(this, actionPriority, ActionType.Attack)) return false;
 
-            target = combatTarget;
+            target = newTarget;
 
             if (currentAttackAction != null) StopCoroutine(currentAttackAction);
             currentAttackAction = StartCoroutine(AttackActionProgress(moveSpeedFraction));

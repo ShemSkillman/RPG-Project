@@ -6,6 +6,7 @@ using System;
 using UnityEngine.EventSystems;
 using UnityEngine.AI;
 using RPG.Control.Cursor;
+using RPG.Core;
 using Cinemachine;
 
 namespace RPG.Control
@@ -16,8 +17,10 @@ namespace RPG.Control
         private Mover mover;
         private Fighter fighter;
         private Health health;
+        ActionScheduler actionScheduler;
 
         [SerializeField] CinemachineFreeLook freelookCam;
+        [SerializeField] ActionMarker waypointMarker, attackMarker;
         bool camControl = false;
 
         [SerializeField] float navMeshProjectionDistance = 1f;
@@ -39,6 +42,7 @@ namespace RPG.Control
             mover = GetComponent<Mover>();
             fighter = GetComponent<Fighter>();
             health = GetComponent<Health>();
+            actionScheduler = GetComponent<ActionScheduler>();
         }
 
         void Update()
@@ -95,7 +99,7 @@ namespace RPG.Control
 
                 foreach (IRaycastable raycastable in raycastables)
                 {
-                    if (raycastable.HandleRaycast(gameObject))
+                    if (raycastable.HandleRaycast(gameObject, attackMarker, waypointMarker, priority))
                     {
                         SetCursor(raycastable.GetCursorType()); 
                         return true;
@@ -137,6 +141,9 @@ namespace RPG.Control
                 if (Input.GetMouseButtonDown(0))
                 {
                     mover.StartMoveAction(target, 1f, priority);
+
+                    ActionMarker marker = Instantiate(waypointMarker, mover.GetDestination(), waypointMarker.transform.rotation);
+                    marker.SetMarker(actionScheduler, null);
                 }
                 SetCursor(CursorType.Movement);
                 return true;

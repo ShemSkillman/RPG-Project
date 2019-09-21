@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections;
 
 namespace RPG.Core
 {
@@ -8,31 +9,33 @@ namespace RPG.Core
         IAction currentAction;
         [SerializeField] int currentActionPriority = 0;
         [SerializeField] ActionType currentActionType = ActionType.None;
-
+        public ActionType cure {  get { return currentActionType; } private set { currentActionType = value; } }
+        public ActionType cure2 { get; private set; }
         public Action onFinishAction, onStartAction;
         bool isFrozen = false;
+        Queue actionsInQueue;
+        
 
-        public bool StartAction(IAction action, int actionPriority, ActionType actionType)
+        public bool StartAction(ScheduledAction action)
         {
-            if (isFrozen || (action != null && actionPriority < currentActionPriority)) return false;
+            if (isFrozen || (action.action != null && action.actionPriority < currentActionPriority)) return false;
 
             if (currentAction != null)
             {
                 currentAction.Cancel();
+                onFinishAction?.Invoke();
             }
 
-            currentAction = action;
-            currentActionPriority = actionPriority;
-            currentActionType = actionType;
+            currentAction = action.action;
+            currentActionPriority = action.actionPriority;
+            currentActionType = action.actionType;
 
             return true;
         }
 
         public void CancelCurrentAction()
         {
-            StartAction(null, 0, ActionType.None);
-
-            onFinishAction?.Invoke();
+            StartAction(new ScheduledAction());            
         }
 
         public ActionType GetCurrentActionType()
@@ -45,6 +48,20 @@ namespace RPG.Core
             CancelCurrentAction();
             isFrozen = true;
         }
+    }
+
+    public class ScheduledAction
+    {
+        public IAction action;
+        public ActionType actionType;
+        public int actionPriority;
+
+        public ScheduledAction()
+        {
+            actionType = ActionType.None;
+            actionPriority = 0;
+        }
+
     }
 
     public enum ActionType
