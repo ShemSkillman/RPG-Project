@@ -13,12 +13,17 @@ namespace RPG.Saving
     {
         public IEnumerator LoadLastScene(string saveFile)
         {
+            // Entity ID -> entity game state mapping
             Dictionary<string, object> state = LoadFile(saveFile);
+
             int buildIndex = SceneManager.GetActiveScene().buildIndex;
+
+            // Load scene of last save
             if (state.ContainsKey("lastSceneBuildIndex"))
             {
                 buildIndex = (int)state["lastSceneBuildIndex"];
             }
+
             yield return SceneManager.LoadSceneAsync(buildIndex);
             RestoreState(state);
         }
@@ -26,6 +31,8 @@ namespace RPG.Saving
         public void Save(string saveFile)
         {
             Dictionary<string, object> state = LoadFile(saveFile);
+
+            // Overwrites previous save
             CaptureState(state);
             SaveFile(saveFile, state);
         }
@@ -40,9 +47,12 @@ namespace RPG.Saving
             File.Delete(GetPathFromSaveFile(saveFile));
         }
 
+        // Load saveable entity states from file
         private Dictionary<string, object> LoadFile(string saveFile)
         {
             string path = GetPathFromSaveFile(saveFile);
+
+            // No save found
             if (!File.Exists(path))
             {
                 return new Dictionary<string, object>();
@@ -50,6 +60,8 @@ namespace RPG.Saving
             using (FileStream stream = File.Open(path, FileMode.Open))
             {
                 BinaryFormatter formatter = new BinaryFormatter();
+
+                // Translates binary to useable format
                 return (Dictionary<string, object>)formatter.Deserialize(stream);
             }
         }
@@ -75,6 +87,7 @@ namespace RPG.Saving
             state["lastSceneBuildIndex"] = SceneManager.GetActiveScene().buildIndex;
         }
 
+        // Loads state for all entities in this scene
         private void RestoreState(Dictionary<string, object> state)
         {
             foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>())
@@ -87,6 +100,7 @@ namespace RPG.Saving
             }
         }
 
+        // Save directory
         private string GetPathFromSaveFile(string saveFile)
         {
             return Path.Combine(Application.persistentDataPath, saveFile + ".sav");

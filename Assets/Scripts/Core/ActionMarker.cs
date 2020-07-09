@@ -2,6 +2,7 @@
 
 namespace RPG.Core
 {
+    // Shows player action in form of a marker
     public class ActionMarker : MonoBehaviour
     {
         Transform follow;
@@ -9,12 +10,18 @@ namespace RPG.Core
 
         void Update()
         {
+            FollowEntity();
+        }
+
+        private void FollowEntity()
+        {
             if (follow != null)
             {
                 transform.position = follow.position;
             }
         }
 
+        // Intialize
         public void SetMarker(ActionScheduler actionScheduler, Transform follow)
         {
             actionScheduler.onFinishAction += DestroyMarker;

@@ -10,10 +10,14 @@ namespace RPG.Core
         IAction currentAction;
         [SerializeField] int currentActionPriority = 0;
         [SerializeField] ActionType currentActionType = ActionType.None;
-        public Action onFinishAction, onStartAction;
+
+        // State
         bool isFrozen = false;
         List<QueuedAction> queuedActions;
         bool isQueued = false;
+
+        // Event
+        public Action onFinishAction, onStartAction;
 
         private void Start()
         {
@@ -22,21 +26,25 @@ namespace RPG.Core
 
         private void Update()
         {
+            // Perform subsequent instructions
             if (tag == "Player" && Input.GetKey(KeyCode.LeftShift)) isQueued = true;
             else isQueued = false;
         }
 
+        // One action processed at any one time
         public bool StartAction(IAction action, int actionPriority, ActionType actionType)
-        {
+        {            
             if (isFrozen || (action != null && actionPriority < currentActionPriority)) return false;
 
+            // Queue?
             if (currentAction != null && isQueued)
             {
                 queuedActions.Add(new QueuedAction(action, null));
                 return true;
             }
 
-            CancelCurrentAction();
+            // Displace lower action priority
+            if (currentAction != null) currentAction.Cancel();
 
             currentAction = action;
             currentActionPriority = actionPriority;
@@ -45,6 +53,7 @@ namespace RPG.Core
             return true;
         }
 
+        // Resets scheduler to empty state
         public void CancelCurrentAction()
         {
             if (currentAction != null) currentAction.Cancel();
@@ -53,6 +62,7 @@ namespace RPG.Core
             currentActionPriority = 0;
             currentActionType = ActionType.None;
 
+            // Notifies scheduler free
             onFinishAction?.Invoke();
         }
 
@@ -68,6 +78,7 @@ namespace RPG.Core
         }
     }
 
+    // To be completed
     internal class QueuedAction
     {
         public object data;
@@ -79,8 +90,6 @@ namespace RPG.Core
             this.action = action;
         }
     }
-
-
 
     public enum ActionType
     {

@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace RPG.Saving
 {
+    // Unity Vector3 is not serializeable (work around)
     [System.Serializable]
     public class SerializableVector3
     {

@@ -19,19 +19,34 @@ namespace RPG.Control
         private Health health;
         ActionScheduler actionScheduler;
 
+        [Header("Free Camera Config")]
         [SerializeField] CinemachineFreeLook freelookCam;
-        [SerializeField] ActionMarker waypointMarker, attackMarker;
-        bool camControl = false;
+        [SerializeField] float zoomSensitivity = 20f;
+        [SerializeField] float minFov = 5;
+        [SerializeField] float maxFov = 80;
 
+        [SerializeField] ActionMarker waypointMarker, attackMarker;
+        bool freeCamControl = false;
+
+        // Max distance allowed from a valid move position
         [SerializeField] float navMeshProjectionDistance = 1f;
+
+        // Prevents lengthy autopilot of player movement
         [SerializeField] float maxPathLength = 40f;
+
+        // Highest priority
         const int priority = 2;
         
         [System.Serializable]
         struct CursorMapping
         {
+            // Player action
             public CursorType type;
+
+            // Cursor graphic
             public Texture2D texture;
+
+            // Click point offset
             public Vector2 hotspot;
         }
 
@@ -49,9 +64,11 @@ namespace RPG.Control
         {
             PlayerViewControls();
 
+            // UI blocks cursor
             if (InteractWithUI()) return;
 
-            if (camControl || health.GetIsDead())
+            // Cannot perform actions when free cam mode or dead
+            if (freeCamControl || health.GetIsDead())
             {
                 SetCursor(CursorType.None);
                 return;
@@ -69,14 +86,21 @@ namespace RPG.Control
                 SwitchCameraControl();
             }
 
-            freelookCam.m_Lens.FieldOfView = Mathf.Clamp(freelookCam.m_Lens.FieldOfView - Input.GetAxisRaw("Mouse ScrollWheel") * 20, 5f, 80f);
+            ZoomCamera();
         }
 
+        private void ZoomCamera()
+        {
+            float fov = freelookCam.m_Lens.FieldOfView - (Input.GetAxisRaw("Mouse ScrollWheel") * zoomSensitivity);
+            freelookCam.m_Lens.FieldOfView = Mathf.Clamp(fov, minFov, maxFov);
+        }
+
+        // Hold right mouse button to rotate orbital camera
         private void SwitchCameraControl()
         {
-            camControl = !camControl;
+            freeCamControl = !freeCamControl;
 
-            if(camControl)
+            if(freeCamControl)
             {
                 freelookCam.m_XAxis.m_InputAxisName = "Mouse X";
                 freelookCam.m_YAxis.m_InputAxisName = "Mouse Y";
@@ -90,15 +114,19 @@ namespace RPG.Control
             }
         }
 
+        // Checks if player wants to interact (perform actions) on interactable world objects
         private bool InteractWithComponent()
         {
+            // Processes closest raycastable objects first
             RaycastHit[] hits = RaycastAllSorted();
+
             foreach (RaycastHit hit in hits)
             {
                 IRaycastable[] raycastables = hit.transform.GetComponents<IRaycastable>();
 
                 foreach (IRaycastable raycastable in raycastables)
                 {
+                    // Checks raycastable can be interacted with at that time
                     if (raycastable.HandleRaycast(gameObject, attackMarker, waypointMarker, priority))
                     {
                         SetCursor(raycastable.GetCursorType()); 
@@ -110,6 +138,7 @@ namespace RPG.Control
             return false;
         }
 
+        // Returns raycasts in order of distance
         private RaycastHit[] RaycastAllSorted()
         {
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
@@ -120,11 +149,13 @@ namespace RPG.Control
                 distances[i] = hits[i].distance;
             }
 
+            // Orders distances and re-arranges raycast array
             Array.Sort(distances, hits);
 
             return hits;
         }
 
+        // Checks if cursor over UI
         private bool InteractWithUI()
         {
             bool isInteracting = EventSystem.current.IsPointerOverGameObject();
@@ -133,6 +164,7 @@ namespace RPG.Control
             return isInteracting;
         }
 
+        // Check if player can move to pointed location
         private bool InteractWithMovement()
         {
             bool hasHit = RaycastNavMesh(out Vector3 target);
@@ -151,20 +183,22 @@ namespace RPG.Control
             return false;
         }
 
+        // Check if desired move location is valid
         private bool RaycastNavMesh(out Vector3 target)
         {
             bool hasHit = Physics.Raycast(GetMouseRay(), out RaycastHit hit);
             target = hit.point;
+
+            // Hit anything?
             if (!hasHit) return false;
 
             bool isNearNavMesh = NavMesh.SamplePosition(target, out NavMeshHit navHit, navMeshProjectionDistance, NavMesh.AllAreas);
             if (!isNearNavMesh)
-            {
                 return false;
-            }
 
             NavMeshPath path = new NavMeshPath();
             bool hasPath = NavMesh.CalculatePath(transform.position, target, NavMesh.AllAreas, path);
+
             if (!hasPath) return false;
             if (path.status != NavMeshPathStatus.PathComplete) return false;
             if (GetPathLength(path) > maxPathLength) return false;
@@ -172,6 +206,7 @@ namespace RPG.Control
             return true;
         }
 
+        // Path length manually calculated
         private float GetPathLength(NavMeshPath path)
         {
             float pathLength = 0f;
@@ -204,6 +239,7 @@ namespace RPG.Control
             return cursorMappings[0];
         }
 
+        // Raycasts from mouse position in camera perspective 
         private Ray GetMouseRay()
         {
             return Camera.main.ScreenPointToRay(Input.mousePosition);

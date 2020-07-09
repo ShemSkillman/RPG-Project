@@ -12,10 +12,12 @@ namespace RPG.Stats
         [SerializeField] Progression progression;
         [SerializeField] GameObject levelUpParticleEffect;
 
+        // State
         Experience experience;
         LazyValue<int> currentLevel;
         int nextLevelXP;
 
+        // Events
         public event Action onLevelUp;
 
         private void Awake()
@@ -29,6 +31,7 @@ namespace RPG.Stats
             currentLevel.ForceInit();
         }
 
+        // Called once at start
         private int GetInitialCurrentLevel()
         {
             if (experience == null) return startingLevel;
@@ -53,6 +56,8 @@ namespace RPG.Stats
             }
         }
 
+        // Called when XP gained
+        // Checks total XP > required XP to level up
         private void UpdateLevel()
         {
             int newLevel = CalculateLevel(currentLevel.value);
@@ -69,26 +74,33 @@ namespace RPG.Stats
             Instantiate(levelUpParticleEffect, transform);
         }
 
+        // Gets character stat with added bonuses
         public int GetStat(Stat stat)
         {
-            return Mathf.RoundToInt((GetBaseStat(stat) + GetAdditiveMultiplier(stat)) * (1 + GetPercentageModifier(stat)/100f));
+            return Mathf.RoundToInt((GetBaseStat(stat) + GetAdditiveMultiplier(stat)) * GetPercentageModifier(stat));
         }
 
+        // XP given to enemy when this character dies
         public int GetRewardXP()
         {
             return progression.GetRewardXP(currentLevel.value);
         }
 
+        // Character stat varies depeding on character class and current level
         private int GetBaseStat(Stat stat)
         {
             return progression.GetStat(characterClass, stat, GetLevel());
         }
 
+        // Added bonus to character stat
         private int GetAdditiveMultiplier(Stat stat)
         {
             int total = 0;
+
+            // Currently only fighter modifies stat values
             foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
             {
+                // Adds all potential bonuses in provider
                 foreach(int modifier in provider.GetAdditiveModifiers(stat))
                 {
                     total += modifier;
@@ -98,18 +110,20 @@ namespace RPG.Stats
             return total;
         }
 
-        private int GetPercentageModifier(Stat stat)
+        // Multiplies (base + additive) to give resultant stat
+        private float GetPercentageModifier(Stat stat)
         {
             int total = 0;
-            foreach(IModifierProvider provider in GetComponents<IModifierProvider>())
+
+            foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
             {
-                foreach(int modifier in provider.GetPercentageModifiers(stat))
+                foreach (int modifier in provider.GetPercentageModifiers(stat))
                 {
                     total += modifier;
                 }
             }
 
-            return total;
+            return 1 + (total / 100f);
         }
 
         public int GetLevel()
@@ -117,10 +131,16 @@ namespace RPG.Stats
             return currentLevel.value;
         }
 
+        // Recursive function 
+        // Increments through levels until total XP is lower than XP for next level
         private int CalculateLevel(int level)
         {
             int totalXP = experience.GetTotalXP();
-            if (nextLevelXP < 0 || totalXP < nextLevelXP) return level;
+
+            // nextLevelXP is -1 when character reaches highest level
+            if (nextLevelXP < 0 || 
+                totalXP < nextLevelXP) 
+                return level;
 
             level++;
             nextLevelXP = CalculateXPRequiredForLevel(level + 1);
@@ -128,11 +148,15 @@ namespace RPG.Stats
             return CalculateLevel(level);
         }
 
+        // Calculates XP required for given level
         public int CalculateXPRequiredForLevel(int level)
         {
+            // All characters start at level 1
             if (level < 2) return 0;
 
             int[] XPLevels = progression.GetXPLevels();
+
+            // XP table starts at level 2
             if (level - 2 < XPLevels.Length)
             {
                 return XPLevels[level - 2];

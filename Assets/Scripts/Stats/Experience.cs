@@ -4,6 +4,7 @@ using System;
 
 namespace RPG.Stats
 {
+    // Used to evaluate character level
     public class Experience : MonoBehaviour, ISaveable
     {
         [SerializeField] int totalXP;

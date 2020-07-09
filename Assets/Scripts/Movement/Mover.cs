@@ -17,6 +17,8 @@ namespace RPG.Movement
         Coroutine currentMoveAction;
 
         [SerializeField] float maxSpeed = 5.66f;
+
+        // Max distance allowed from target location
         [SerializeField] float tolerance = 1f;
 
         private void Awake()
@@ -29,6 +31,7 @@ namespace RPG.Movement
 
         void Update()
         {
+            // Can walk over dead characters
             navMeshAgent.enabled = !health.GetIsDead();
             UpdateAnimator();
         }
@@ -43,6 +46,7 @@ namespace RPG.Movement
             MovementComplete();
         }
 
+        // Character move animation matched to forward speed
         private void UpdateAnimator()
         {
             Vector3 velocity = Vector3.zero;
@@ -54,29 +58,36 @@ namespace RPG.Movement
             GetComponent<Animator>().SetFloat("forwardSpeed", speed);
         }
 
+        // Decides if move instruction can be processed
         public bool StartMoveAction(Vector3 destination, float speedFraction, int actionPriority)
         {
+            // Compare priority to current action priority in scheduler
             if (!actionScheduler.StartAction(this, actionPriority, ActionType.Move) || !navMeshAgent.enabled) return false;
 
             MoveTo(destination, speedFraction);
 
+            // Override previous move instruction if required
             if (currentMoveAction != null) StopCoroutine(currentMoveAction);
             currentMoveAction = StartCoroutine(MoveActionProgress());
 
+            // Occupy scheduler
             actionScheduler.onStartAction?.Invoke();
             return true;
         }
 
+        // Decides if stop instruction can be processed
         public bool StartStopAction(int actionPriority)
         {
             if (!actionScheduler.StartAction(this, actionPriority, ActionType.Stop)) return false;
 
             if (navMeshAgent.enabled) navMeshAgent.isStopped = true;
 
+            // Stop action must be overriden by action of equal or greater priority
             actionScheduler.onStartAction?.Invoke();
             return true;
         }
 
+        // Initiates movement to desired location
         public void MoveTo(Vector3 destination, float speedFraction)
         {
             if (!navMeshAgent.enabled) return;
@@ -95,10 +106,12 @@ namespace RPG.Movement
         //    return transform.position;
         //}
 
+        // Checks current movement action complete
         private bool AtDestination()
         {
             if (!navMeshAgent.enabled || navMeshAgent.pathPending) return false;
 
+            // Prevent never reaching desitnation
             if (navMeshAgent.remainingDistance <= tolerance)
             {
                 return true;
@@ -107,12 +120,14 @@ namespace RPG.Movement
             return false;
         }
 
+        // Checks if at provided location
         public bool IsAtLocation(Vector3 location)
         {
             if (Vector3.Distance(transform.position, location) <= tolerance) return true;
             return false;
         }
 
+        // Free scheduler
         private void MovementComplete()
         {
             actionScheduler.CancelCurrentAction();
@@ -133,6 +148,7 @@ namespace RPG.Movement
             return (navMeshAgent.speed / maxSpeed);
         }
 
+        // Stop movement
         public void Cancel()
         {
             if (currentMoveAction != null) StopCoroutine(currentMoveAction);

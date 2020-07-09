@@ -4,6 +4,7 @@ using TMPro;
 
 namespace RPG.UI.DamageText
 {
+    // Stores all results of an attack move
     public class AttackText : MonoBehaviour
     {
         TextMeshProUGUI textMeshPro;
@@ -22,6 +23,7 @@ namespace RPG.UI.DamageText
             Destroy(gameObject);
         }
 
+        // Evaluate attack results
         public void ExtractReport(AttackReport attackReport)
         {
 
@@ -45,18 +47,22 @@ namespace RPG.UI.DamageText
             SetText();
         }
 
+        // Displays highest priority info to user
         private void SetText()
         {
             string message = "";
 
+            // Death
             if (isDead)
             {
                 message = "Dead!";
             }
+            // Damage
             else if (damageCount > 0)
             {
                 message += damageCount.ToString();
             }
+            // Dodge
             else if (missCount > 0)
             {
                 if (missCount == 1) message = "Dodge!";

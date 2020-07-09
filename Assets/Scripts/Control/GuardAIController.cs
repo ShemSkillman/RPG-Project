@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace RPG.Control
 {
+    // Currently the only variation of the stock AI controller
     public class GuardAIController : AIController
     {
         [Header("Patrol Configuration")]
@@ -12,6 +13,7 @@ namespace RPG.Control
         [SerializeField] protected float patrolSpeedFraction = 0.2f;
         [SerializeField] protected float waypointTolerance = 0.1f;
 
+        // State
         protected int currentWaypointIndex = 0;
         protected float timeOnWaypoint = Mathf.Infinity;
 

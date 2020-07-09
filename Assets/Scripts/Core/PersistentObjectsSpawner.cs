@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace RPG.Core
 {
+    // Prevents saving object from being destroyed between scenes
     public class PersistentObjectsSpawner : MonoBehaviour
     {
         [SerializeField] GameObject persistentObjectsPrefab;
