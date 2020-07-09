@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace RPG.Core
 {
@@ -10,50 +9,33 @@ namespace RPG.Core
         IAction currentAction;
         [SerializeField] int currentActionPriority = 0;
         [SerializeField] ActionType currentActionType = ActionType.None;
+        public ActionType cure {  get { return currentActionType; } private set { currentActionType = value; } }
+        public ActionType cure2 { get; private set; }
         public Action onFinishAction, onStartAction;
         bool isFrozen = false;
-        List<QueuedAction> queuedActions;
-        bool isQueued = false;
+        Queue actionsInQueue;
+        
 
-        private void Start()
+        public bool StartAction(ScheduledAction action)
         {
-            queuedActions = new List<QueuedAction>();
-        }
+            if (isFrozen || (action.action != null && action.actionPriority < currentActionPriority)) return false;
 
-        private void Update()
-        {
-            if (tag == "Player" && Input.GetKey(KeyCode.LeftShift)) isQueued = true;
-            else isQueued = false;
-        }
-
-        public bool StartAction(IAction action, int actionPriority, ActionType actionType)
-        {
-            if (isFrozen || (action != null && actionPriority < currentActionPriority)) return false;
-
-            if (currentAction != null && isQueued)
+            if (currentAction != null)
             {
-                queuedActions.Add(new QueuedAction(action, null));
-                return true;
+                currentAction.Cancel();
+                onFinishAction?.Invoke();
             }
 
-            CancelCurrentAction();
-
-            currentAction = action;
-            currentActionPriority = actionPriority;
-            currentActionType = actionType;
+            currentAction = action.action;
+            currentActionPriority = action.actionPriority;
+            currentActionType = action.actionType;
 
             return true;
         }
 
         public void CancelCurrentAction()
         {
-            if (currentAction != null) currentAction.Cancel();
-
-            currentAction = null;
-            currentActionPriority = 0;
-            currentActionType = ActionType.None;
-
-            onFinishAction?.Invoke();
+            StartAction(new ScheduledAction());            
         }
 
         public ActionType GetCurrentActionType()
@@ -68,19 +50,19 @@ namespace RPG.Core
         }
     }
 
-    internal class QueuedAction
+    public class ScheduledAction
     {
-        public object data;
         public IAction action;
+        public ActionType actionType;
+        public int actionPriority;
 
-        public QueuedAction(IAction action, object data)
+        public ScheduledAction()
         {
-            this.data = data;
-            this.action = action;
+            actionType = ActionType.None;
+            actionPriority = 0;
         }
+
     }
-
-
 
     public enum ActionType
     {
