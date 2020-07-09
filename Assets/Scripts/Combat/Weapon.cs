@@ -5,6 +5,7 @@ namespace RPG.Combat
 {
     public class Weapon : MonoBehaviour
     {
+        // Events not used!
         [SerializeField] UnityEvent onStartAttack;
         [SerializeField] UnityEvent onEndAttack;
 

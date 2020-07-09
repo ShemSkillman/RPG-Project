@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace RPG.Combat
 {
+    // Displays health of enemy targeted by the player
     public class EnemyHealthDisplay : MonoBehaviour
     {
         Fighter playerFighter;

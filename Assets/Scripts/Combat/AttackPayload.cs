@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace RPG.Combat
 {
+    // Used to evaluate attack on target
     public class AttackPayload
     {
         public GameObject instigator;
@@ -23,23 +24,28 @@ namespace RPG.Combat
             hitPrecision = GetHitPrecision(baseStats, weapon);
         }
 
+        // Melee or range?
         private Stat GetAttackType(WeaponConfig weapon)
         {
+            // Strength == melee
             Stat attackType = Stat.Strength;
             if (weapon.HasProjectile()) attackType = Stat.Range;
             return attackType;
         }
 
+        // Critical = (attack type stat) x2
         private int GetCriticalStrike(BaseStats baseStats, WeaponConfig weapon)
         {
             return baseStats.GetStat(attackType) * 2;
         }
 
+        // Precision = (attack type stat) + swiftness
         public int GetHitPrecision(BaseStats baseStats, WeaponConfig weapon)
         {
             return baseStats.GetStat(attackType) + baseStats.GetStat(Stat.Swiftness);
         }
 
+        // Total damage = (attack type stat) * weapon weight
         private int GetDamage(BaseStats baseStats, WeaponConfig weapon)
         {
             return Mathf.RoundToInt(baseStats.GetStat(attackType) * weapon.GetWeaponWeight());

@@ -3,11 +3,13 @@ using UnityEngine.UI;
 
 namespace RPG.Attributes
 {
+    // Displayed above entity
     public class HealthBar : MonoBehaviour
     {
         [SerializeField] Image healthBarForeground;
         [SerializeField] Canvas rootCanvas;
         [SerializeField] float maxVisibilityTime = 5f;
+        
         Health health;
 
         float timeSinceHealthChange = Mathf.Infinity;
@@ -36,6 +38,7 @@ namespace RPG.Attributes
         {
             timeSinceHealthChange += Time.deltaTime;
 
+            // Hide health bar when no recent health changes
             if (health.GetIsDead() || timeSinceHealthChange > maxVisibilityTime)
             {
                 rootCanvas.enabled = false;

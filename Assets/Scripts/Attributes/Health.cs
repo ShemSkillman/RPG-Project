@@ -34,11 +34,13 @@ namespace RPG.Attributes
             maxHealthPoints = new LazyValue<int>(GetInitialMaxHealth);
         }
 
+        // Assume full health
         private int GetInitialHealth()
         {
             return maxHealthPoints.value;
         }
 
+        // Health increases with level
         private int GetInitialMaxHealth()
         {
             return baseStats.GetStat(Stat.Health);
@@ -59,6 +61,7 @@ namespace RPG.Attributes
             baseStats.onLevelUp -= LevelUpNewHealth;
         }
 
+        // Maintains same health percentage despite increase
         private void LevelUpNewHealth()
         {
             float oldHealthPercentage = healthPoints.value / (float)maxHealthPoints.value;
@@ -70,6 +73,7 @@ namespace RPG.Attributes
         {
             if (isDead) return false;
 
+            // HP cannot go under 0
             healthPoints.value = Mathf.Max(healthPoints.value - damageTaken, 0);
 
             onTakeDamage.Invoke();
@@ -89,10 +93,12 @@ namespace RPG.Attributes
         {
             if (isDead) return;
 
+            // Prevent exceeding max HP
             healthPoints.value = Mathf.Min(healthPoints.value + healthToRestore, maxHealthPoints.value);
             onHealthChange();
         }
 
+        // Enemy recieves kill XP
         private void GrantExperience(GameObject instigator)
         {
             Experience experience = instigator.GetComponent<Experience>();
@@ -108,6 +114,7 @@ namespace RPG.Attributes
             StartCoroutine(BodySink());
         }
 
+        // Dead characters sink slowly into the ground before disspearing
         private IEnumerator BodySink()
         {
             float sinkDistance = 0f;

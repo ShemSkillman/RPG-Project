@@ -2,6 +2,7 @@
 
 namespace RPG.Combat
 {
+    // Wrapper for attack results
     public class AttackReport
     {
         public GameObject instigator;

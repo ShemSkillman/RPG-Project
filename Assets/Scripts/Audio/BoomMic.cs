@@ -3,6 +3,7 @@ using Cinemachine;
 
 namespace RPG.Audio
 {
+    // Positions audiosource in the scene
     public class BoomMic : MonoBehaviour
     {
         [SerializeField] Transform target;

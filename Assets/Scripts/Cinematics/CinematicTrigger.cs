@@ -3,6 +3,7 @@ using UnityEngine.Playables;
 
 namespace RPG.Cinematics
 {
+    // Triggers one-time cinematic when player enters zone
     public class CinematicTrigger : MonoBehaviour
     {
         bool playedCinematic = false;

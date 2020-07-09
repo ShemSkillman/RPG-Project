@@ -5,6 +5,7 @@ using RPG.Control;
 
 namespace RPG.Cinematics
 {
+    // Removes player control during cinematic
     public class CinematicControlRemover : MonoBehaviour
     {
         private GameObject player;

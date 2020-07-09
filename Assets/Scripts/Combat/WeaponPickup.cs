@@ -24,14 +24,17 @@ namespace RPG.Combat
             Pickup(other);
         }
 
+        // Check player collision to register pickup
         private void Pickup(Collider other)
         {
             if (other.tag == "Player")
             {
+                // Weapon pickup
                 if (weaponPickup != null)
                 {
                     other.gameObject.GetComponent<Fighter>().EquipWeapon(weaponPickup);
                 }
+                // Healing item
                 else if (healthToRestore > 0)
                 {
                     other.gameObject.GetComponent<Health>().Heal(healthToRestore);
@@ -41,6 +44,7 @@ namespace RPG.Combat
             }
         }
 
+        // Player move action
         private void GoToPickup(GameObject player, ActionMarker waypointMarker, int priority)
         {
             if (player.GetComponent<Mover>().StartMoveAction(transform.position, 1f, priority))
@@ -57,6 +61,7 @@ namespace RPG.Combat
             ActivatePickup(true);
         }
 
+        // Pickup when visible
         private void ActivatePickup(bool isActive)
         {
             pickupCollider.enabled = isActive;

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace RPG.Attributes
 {
+    // Displays player health current / max
     public class HealthDisplay : MonoBehaviour
     {
         Health health;

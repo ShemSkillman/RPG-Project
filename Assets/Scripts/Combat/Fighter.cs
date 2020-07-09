@@ -14,10 +14,9 @@ namespace RPG.Combat
     public class Fighter : MonoBehaviour, IAction, ISaveable, IModifierProvider
     {
         [SerializeField] WeaponConfig defaultWeapon;
+        [SerializeField] float rotateToTargetSmoothing = 10f;
 
-        Transform rightHandTransform, leftHandTransform;
-        const string rightHandName = "Hand_R", leftHandName = "Hand_L";
-
+        // State
         Coroutine currentAttackAction;
         CombatTarget target, myCombatTarget;
         WeaponConfig currentWeaponConfig;
@@ -25,6 +24,11 @@ namespace RPG.Combat
         float timeSinceLastAttack = Mathf.Infinity, weaponCoolDownTime = 0f;
         const float variance = 0.2f;
 
+        // Used to position weapon prefab
+        Transform rightHandTransform, leftHandTransform;
+        const string rightHandName = "Hand_R", leftHandName = "Hand_L";
+
+        // Cache references
         Mover mover;
         Animator animator;
         BaseStats baseStats;
@@ -54,6 +58,7 @@ namespace RPG.Combat
             return AttachWeapon(defaultWeapon);
         }
 
+        // Gets hand transforms on character avatar
         private void FindHands()
         {
             Transform[] children = GetComponentsInChildren<Transform>();
@@ -73,14 +78,17 @@ namespace RPG.Combat
             }
         }
 
+        // Weapon attributes used by fighter
         public void EquipWeapon(WeaponConfig weapon)
         {
             currentWeaponConfig = weapon;
             currentWeapon.value = AttachWeapon(weapon);
         }
 
+        // Spawns weapon prefab
         private Weapon AttachWeapon(WeaponConfig weapon)
         {
+            // Random cooldown before weapon can be used
             RandomizeWeaponCoolDown();
             return weapon.Spawn(rightHandTransform, leftHandTransform, animator);
         }
@@ -95,20 +103,20 @@ namespace RPG.Combat
             timeSinceLastAttack += Time.deltaTime;
         }
 
+        // Progresses attack action to completion
         IEnumerator AttackActionProgress(float speedFraction)
         {
             bool isMovingCloser = false;
 
             while (!health.GetIsDead() && CanAttack(target))
             {
-                bool inRange = Vector3.Distance(transform.position, target.transform.position) <= currentWeaponConfig.GetWeaponRange();
-
-                if (!inRange && !isMovingCloser || !IsComfortableRange() && isMovingCloser) // MOVE TO TARGET
+                if (!IsComfortableRange() && !isMovingCloser) // MOVE TO TARGET
                 {
                     isMovingCloser = true;
                     mover.MoveTo(target.transform.position, speedFraction);
                 }
-                else // STOP AND ATTACK
+                // Stop and attack
+                else if (IsComfortableRange())
                 {
                     isMovingCloser = false;
                     mover.Cancel();
@@ -121,9 +129,15 @@ namespace RPG.Combat
             AttackComplete();
         }
 
+        // Target preferred to be under 75% of max range when ranged
         private bool IsComfortableRange()
         {
-            return Vector3.Distance(transform.position, target.transform.position) < (currentWeaponConfig.GetWeaponRange() * 0.75f);  
+            if (currentWeaponConfig.HasProjectile())
+                return Vector3.Distance(transform.position, target.transform.position) < (currentWeaponConfig.GetWeaponRange() * 0.75f);  
+            else
+            {
+                return Vector3.Distance(transform.position, target.transform.position) < (currentWeaponConfig.GetWeaponRange());
+            }
         }
 
         private void AttackBehaviour()
@@ -161,13 +175,17 @@ namespace RPG.Combat
         private void LookAtTarget()
         {
             var lookPos = target.transform.position - transform.position;
+
+            // Ignore if target is higher or lower
             lookPos.y = 0;
-            var rotation = Quaternion.LookRotation(lookPos);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 10f);
+
+            var targetRotation = Quaternion.LookRotation(lookPos);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateToTargetSmoothing);
         }
 
         private void TriggerAttackAnimation()
         {
+            // Prevents immediate stop of triggered attack
             animator.ResetTrigger("stopAttack");
             animator.SetTrigger("attack");
         }
@@ -178,10 +196,13 @@ namespace RPG.Combat
             if (target == null) return;
 
             AttackPayload attackPayload = new AttackPayload(baseStats, currentWeaponConfig);
+
+            // Range weapon shoot
             if (currentWeaponConfig.HasProjectile())
             {
                 currentWeaponConfig.LaunchProjectile(target, rightHandTransform, leftHandTransform, attackPayload);
             }
+            // Melee attack
             else
             {
                 target.HandleAttack(attackPayload);
@@ -202,10 +223,12 @@ namespace RPG.Combat
 
         public bool StartAttackAction(CombatTarget newTarget, float moveSpeedFraction, int actionPriority)
         {
+            // Check scheduler free or interruptable
             if (!actionScheduler.StartAction(this, actionPriority, ActionType.Attack)) return false;
 
             target = newTarget;
 
+            // Start attack progress
             if (currentAttackAction != null) StopCoroutine(currentAttackAction);
             currentAttackAction = StartCoroutine(AttackActionProgress(moveSpeedFraction));
 
@@ -213,6 +236,7 @@ namespace RPG.Combat
             return true;
         }
 
+        // Validates given target
         public bool CanAttack(CombatTarget combatTarget)
         {
             if (combatTarget != null && 
@@ -232,6 +256,7 @@ namespace RPG.Combat
             actionScheduler.CancelCurrentAction();
         }
 
+        // Stops attack in progress
         public void Cancel()
         {
             if (currentAttackAction != null) StopCoroutine(currentAttackAction);
@@ -241,24 +266,30 @@ namespace RPG.Combat
             animator.SetTrigger("stopAttack");
         }
 
+        // Adds bonus to given stat
         public IEnumerable<int> GetAdditiveModifiers(Stat stat)
         {
+            // Melee bonus (strength stat)
             if (stat == Stat.Strength && !currentWeaponConfig.HasProjectile())
             {
                 yield return currentWeaponConfig.GetBonusDamagePoints();
             }
+            // Range bonus (range stat)
             else if (stat == Stat.Range && currentWeaponConfig.HasProjectile())
             {
                 yield return currentWeaponConfig.GetBonusDamagePoints();
             }
         }
 
+        // Mutliplies given stat
         public IEnumerable<int> GetPercentageModifiers(Stat stat)
         {
+            // Melee attack multiplier
             if (stat == Stat.Strength && !currentWeaponConfig.HasProjectile())
             {
                 yield return currentWeaponConfig.GetBonusDamagePercentage();
             }
+            // Range attack multiplier
             else if (stat == Stat.Range && currentWeaponConfig.HasProjectile())
             {
                 yield return currentWeaponConfig.GetBonusDamagePercentage();

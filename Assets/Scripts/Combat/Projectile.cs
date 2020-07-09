@@ -18,11 +18,13 @@ namespace RPG.Combat
         [SerializeField] float lifeAfterImpact = 3f;
         public UnityEvent onHit;
 
+        // State
         CombatTarget target;
         bool isStopped, missedTarget;
         Vector3 targetOffset;
         AttackPayload attackPayload;
 
+        // Initialize
         public void SetTarget(CombatTarget target, AttackPayload attackPayload)
         {
             this.target = target;
@@ -32,6 +34,7 @@ namespace RPG.Combat
             Destroy(gameObject, maxLifeTime);
         }
 
+        // Points projectile move direction
         private void AimAtTarget()
         {
             GenerateRandomTargetOffset();
@@ -39,6 +42,7 @@ namespace RPG.Combat
             transform.LookAt(aimPos);
         }
         
+        // Recursive function that adjusts aim to hit moving target
         private Vector3 GetAim(Vector3 targetPos, NavMeshAgent targetNav)
         {
             if (!isSmartAim) return targetPos;
@@ -46,6 +50,8 @@ namespace RPG.Combat
             float distanceToTarget = Vector3.Distance(transform.position, targetPos);
             float timeToReachTarget = distanceToTarget / speed;
             Vector3 futureTargetPos = target.transform.position + targetNav.velocity * timeToReachTarget;
+
+            // Recalculate until projectile connect with target
             if (targetPos != futureTargetPos)
             {
                 return GetAim(futureTargetPos, targetNav);
@@ -55,7 +61,9 @@ namespace RPG.Combat
                 return targetPos;
             }
         }
+        
 
+        // Randomness when aiming at target
         private void GenerateRandomTargetOffset()
         {
             CapsuleCollider targetCollider = target.GetComponent<CapsuleCollider>();
@@ -63,6 +71,7 @@ namespace RPG.Combat
             targetOffset = new Vector3(0f, randomHeight, 0f);
         }
 
+        // Returns central point of target avatar
         private Vector3 GetTargetCenter()
         {
             CapsuleCollider targetCollider = target.GetComponent<CapsuleCollider>();
@@ -72,10 +81,14 @@ namespace RPG.Combat
         private void Update()
         {
             if (target == null || isStopped) return;
+
+            // Constantly change rotation to face target
             if (isHoming && !target.GetIsDead())
             {
                 transform.LookAt(GetTargetCenter());
             }
+
+            // Forward movement
             transform.Translate(Vector3.forward * Time.deltaTime * speed);
         }
 
@@ -84,11 +97,16 @@ namespace RPG.Combat
             if (other.gameObject.GetComponent<CombatTarget>() != target) return;
             if (target.GetIsDead() || isStopped == true || missedTarget) return;
 
+            // Prevents duplicate hit attempts when missed
             missedTarget = !target.HandleAttack(attackPayload);
             if (missedTarget) return;
 
             onHit.Invoke();
+
+            // Prevents further movement
             isStopped = true;
+
+            // Hit FX
             if (hitEffect != null) Instantiate(hitEffect, transform.position, transform.rotation);
 
             foreach (GameObject toDestroy in destroyOnHit)

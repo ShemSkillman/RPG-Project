@@ -29,7 +29,8 @@ namespace RPG.Control
         protected ActionScheduler actionScheduler;
         protected CombatTarget myCombatTarget;
 
-        [SerializeField] protected CombatTarget currentTarget;
+        // State
+        protected CombatTarget currentTarget;
         protected CombatTarget lostTarget;
         protected List<CombatTarget> enemies = new List<CombatTarget>();
         protected List<CombatTarget> allies = new List<CombatTarget>();
@@ -72,6 +73,7 @@ namespace RPG.Control
             StartCoroutine(AIBrain());
         }
 
+        // Clan allegiance used to set enemies and allies
         protected void SetEnemiesAndAllies()
         {
             enemies = entityManager.GetEnemies(myCombatTarget);
@@ -106,6 +108,7 @@ namespace RPG.Control
             timeSinceLastSawEnemy += Time.deltaTime;
         }
 
+        // Main loop 
         IEnumerator AIBrain()
         {
             while (!isDead)
@@ -118,15 +121,18 @@ namespace RPG.Control
                 CheckProximity();
                 AssistAllies();
 
+                // Attack enemy target
                 if (currentTarget != null)
                 {
                     timeSinceLastSawEnemy = 0f;
                     AttackBehaviour();
                 }
+                // Wait after losing enemy
                 else if (IsIdle())
                 {
                     IdleBehaviour();
                 }
+                // Move back to guard (default) position
                 else
                 {
                     MovementBehaviour();
@@ -138,8 +144,18 @@ namespace RPG.Control
         {
             if (timeSinceLastSawEnemy <= suspicionTime) return true;
 
+            // Stop waiting for lost target
             lostTarget = null;
             return false;
+        }
+
+        public void AttackBehaviour()
+        {
+            // Prevent duplicate attack action
+            if (actionScheduler.GetCurrentActionType() == ActionType.Attack && currentTarget == fighter.GetTarget()) return;
+
+            // Request action
+            CheckSchedulerFree(fighter.StartAttackAction(currentTarget, normalSpeedFraction, priority));
         }
 
         protected virtual void MovementBehaviour()
@@ -159,42 +175,44 @@ namespace RPG.Control
             CheckSchedulerFree(mover.StartStopAction(priority));
         }
 
-        public void AttackBehaviour()
-        {
-            if (actionScheduler.GetCurrentActionType() == ActionType.Attack && currentTarget == fighter.GetTarget()) return;
-            
-            CheckSchedulerFree(fighter.StartAttackAction(currentTarget, normalSpeedFraction, priority));
-        }
 
         protected void CheckSchedulerFree(bool isStartActionSuccessful)
         {
             isSchedulerFree = isStartActionSuccessful;
 
+            // Notified when scheduler free
             if (!isStartActionSuccessful)
             {
                 actionScheduler.onFinishAction += SchedulerFree;
             }
         }
 
+        // Go back to checking environment
         protected void SchedulerFree()
         {
             isSchedulerFree = true;
             actionScheduler.onFinishAction -= SchedulerFree;
         }
 
+        // Checks if target valid
         protected void CheckCurrentTarget()
         {
+            // Enemy clan and alive?
             if (!fighter.CanAttack(currentTarget))
             {
                 currentTarget = null;
             }
+            // Out of range
             else if (Vector3.Distance(transform.position, currentTarget.transform.position) > chaseDistance)
             {
+                // Target recently lost
                 lostTarget = currentTarget;
+
                 currentTarget = null;
             }
         }
 
+        // Targets closest enemy to attack
         protected void CheckProximity()
         {
             if (enemies.Count < 1 || currentTarget != null) return;
@@ -218,6 +236,7 @@ namespace RPG.Control
             currentTarget = closestEnemy;
         }
 
+        // Checks if nearby allies need help to attack an enemy
         protected void AssistAllies()
         {
             if (currentTarget != null || allies.Count < 1) return;
@@ -233,6 +252,7 @@ namespace RPG.Control
 
                 if (distanceToAlly <= sightRange)
                 {
+                    // Get enemy that ally is attacking
                     CombatTarget allyTarget = ally.GetComponent<Fighter>().GetTarget();
                     if (allyTarget == null) continue;
 
@@ -246,20 +266,20 @@ namespace RPG.Control
             currentTarget = closestEnemy;
         }
 
+        // Evaluate whether to attack attacking enemy
         private void DecideAttackAgainstInstigator(AttackReport attackReport)
         {
-            DecideAttackAgainstEnemy(attackReport.instigator.GetComponent<CombatTarget>());
-        }
+            var instigator = attackReport.instigator.GetComponent<CombatTarget>();
 
-        private void DecideAttackAgainstEnemy(CombatTarget enemy)
-        {
+            // Attack if this enemy is closer
             if (currentTarget == null ||
-                Vector3.Distance(enemy.transform.position, transform.position) < Vector3.Distance(currentTarget.transform.position, transform.position))
+                Vector3.Distance(instigator.transform.position, transform.position) < Vector3.Distance(currentTarget.transform.position, transform.position))
             {
-                currentTarget = enemy;
+                currentTarget = instigator;
             }
         }
 
+        // Checks lost target is back within range
         public void LocateDistantTarget(CombatTarget target)
         {
             if (currentTarget != null ||
@@ -268,6 +288,7 @@ namespace RPG.Control
         }
 
         // Called by Unity
+        // Visualize LOS
         protected void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;

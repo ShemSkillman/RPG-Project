@@ -21,6 +21,7 @@ namespace RPG.Combat
         const string weaponName = "Weapon";
         const float minTimeBetweenAttacks = 1f;
 
+        // Spawns weapon instance in avatar hand
         public Weapon Spawn(Transform rightHand, Transform leftHand, Animator animator)
         {
             DestroyOldWeapon(rightHand, leftHand);
@@ -33,6 +34,7 @@ namespace RPG.Combat
                 weapon.gameObject.name = weaponName;           
             }
 
+            // Changes avatar animations to match held weapon
             var overrideController = animator.runtimeAnimatorController as AnimatorOverrideController;
             if (weaponAnimatorOverride != null)
             {
@@ -46,6 +48,7 @@ namespace RPG.Combat
             return weapon;
         }
 
+        // Destroys currently held weapon if present
         private void DestroyOldWeapon(Transform rightHand, Transform leftHand)
         {
             Transform oldWeapon = rightHand.Find(weaponName);
