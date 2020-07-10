@@ -44,7 +44,7 @@ namespace RPG.Core
             }
 
             // Displace lower action priority
-            if (currentAction != null) currentAction.Cancel();
+            CancelCurrentAction();
 
             currentAction = action;
             currentActionPriority = actionPriority;

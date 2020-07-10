@@ -15,6 +15,7 @@ namespace RPG.Combat
     {
         [SerializeField] WeaponConfig defaultWeapon;
         [SerializeField] float rotateToTargetSmoothing = 10f;
+        [SerializeField] float moveToTargetRefreshTime = 1f;
 
         // State
         Coroutine currentAttackAction;
@@ -106,24 +107,22 @@ namespace RPG.Combat
         // Progresses attack action to completion
         IEnumerator AttackActionProgress(float speedFraction)
         {
-            bool isMovingCloser = false;
-
             while (!health.GetIsDead() && CanAttack(target))
             {
-                if (!IsComfortableRange() && !isMovingCloser) // MOVE TO TARGET
+                // Move closer to target
+                if (!IsComfortableRange())
                 {
-                    isMovingCloser = true;
                     mover.MoveTo(target.transform.position, speedFraction);
+                    yield return new WaitForSeconds(moveToTargetRefreshTime);
                 }
                 // Stop and attack
-                else if (IsComfortableRange())
+                else
                 {
-                    isMovingCloser = false;
                     mover.Cancel();
                     AttackBehaviour();
+                    yield return null;
                 }
 
-                yield return null;
             }        
 
             AttackComplete();

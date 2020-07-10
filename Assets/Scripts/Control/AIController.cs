@@ -253,7 +253,7 @@ namespace RPG.Control
                 if (distanceToAlly <= sightRange)
                 {
                     // Get enemy that ally is attacking
-                    CombatTarget allyTarget = ally.GetComponent<Fighter>().GetTarget();
+                    CombatTarget allyTarget = ally.GetComponent<AIController>()?.GetTarget();
                     if (allyTarget == null) continue;
 
                     if (Vector3.Distance(transform.position, allyTarget.transform.position) < closestEnemyDistance)
@@ -285,6 +285,12 @@ namespace RPG.Control
             if (currentTarget != null ||
                 Vector3.Distance(transform.position, target.transform.position) > chaseDistance) return;
             currentTarget = target;
+        }
+
+        public CombatTarget GetTarget()
+        {
+            CheckCurrentTarget();
+            return currentTarget;
         }
 
         // Called by Unity
